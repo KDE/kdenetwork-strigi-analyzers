@@ -2,7 +2,7 @@
 Encoding=UTF-8
 Type=Service
 Name=Bit Torrent Info
-Name[br]=Titouriñ war Bit Torrent
+Name[br]=Titouriñ diwar-benn Bit Torrent
 Name[ca]=Informació de Bit Torrent
 Name[cs]=Bit Torrent informace
 Name[da]=info om bit-torrent
@@ -21,6 +21,8 @@ Name[pt]=Informações Bit Torrent
 Name[pt_BR]=Informações do Bit Torrent
 Name[ru]=Сведения о BitTorrent
 Name[sl]=Podatki o BitTorrentu
+Name[sr]=Bit Torrent информације
+Name[sr@Latn]=Bit Torrent informacije
 Name[sv]=Information om Bit Torrent
 Name[ta]=பிட் டோர்ரெண்ட் தகவல்
 Name[tr]=Bit Torrent Bilgisi
