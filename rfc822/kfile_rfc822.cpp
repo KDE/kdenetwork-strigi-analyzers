@@ -59,7 +59,7 @@ KRfc822Plugin::KRfc822Plugin(QObject *parent, const char *name,
     item = addItemInfo(group, "To", i18n("To"), QVariant::String);
     item = addItemInfo(group, "Subject", i18n("Subject"), QVariant::String);
     item = addItemInfo(group, "Date", i18n("Date"), QVariant::String);
-
+    item = addItemInfo(group, "Content-Type", i18n("Content-Type"), QVariant::String);
 }
 
 
@@ -83,6 +83,7 @@ bool KRfc822Plugin::readInfo( KFileMetaInfo& info, uint /*what*/ )
     char id_to[] = "To: ";
     char id_subject[] = "Subject: ";
     char id_date[] = "Date: ";
+    char id_contenttype[] = "Content-Type: ";
     
     // we need a buffer for lines
     char linebuf[1000];
@@ -92,10 +93,13 @@ bool KRfc822Plugin::readInfo( KFileMetaInfo& info, uint /*what*/ )
     char buf_to[1000] = "";
     char buf_subject[1000] = "";
     char buf_date[1000] = "";
-    buf_from[999] = '\0';
-    buf_to[999] = '\0';
-    buf_subject[999] = '\0';
-    buf_date[999] = '\0';
+    char buf_contenttype[1000] = "";
+    
+    memset(buf_from, 0, 999);
+    memset(buf_to, 0, 999);
+    memset(buf_subject, 0, 999);
+    memset(buf_date, 0, 999);
+    memset(buf_contenttype, 0, 999);
     char * myptr;
         
     bool done=false;
@@ -121,12 +125,17 @@ bool KRfc822Plugin::readInfo( KFileMetaInfo& info, uint /*what*/ )
             // we have a name
             myptr = linebuf + 6;
             strncpy(buf_date, myptr, 999);
+        } else if (memcmp(linebuf, id_contenttype, 14) == 0) {
+            // we have a name
+            myptr = linebuf + 14;
+            strncpy(buf_contenttype, myptr, 999);
         }
         
         // are we done yet?
         if (
           ((strlen(buf_from) > 0) && (strlen(buf_to) > 0) &&
-          (strlen(buf_subject) > 0) && (strlen(buf_date) > 0)) ||
+          (strlen(buf_subject) > 0) && (strlen(buf_date) > 0) &&
+          (strlen(buf_contenttype) > 0)) ||
           (file.atEnd())
           )
             done = true;
@@ -135,10 +144,11 @@ bool KRfc822Plugin::readInfo( KFileMetaInfo& info, uint /*what*/ )
     
     KFileMetaInfoGroup group = appendGroup(info, "Technical");
     
-    if (strlen(buf_from) > 0)      appendItem(group, "From", buf_from);
-    if (strlen(buf_to) > 0)        appendItem(group, "To", buf_to);
-    if (strlen(buf_subject) > 0)   appendItem(group, "Subject", buf_subject);
-    if (strlen(buf_date) > 0)      appendItem(group, "Date", buf_date);
+    if (strlen(buf_from) > 0)           appendItem(group, "From", buf_from);
+    if (strlen(buf_to) > 0)             appendItem(group, "To", buf_to);
+    if (strlen(buf_subject) > 0)        appendItem(group, "Subject", buf_subject);
+    if (strlen(buf_date) > 0)           appendItem(group, "Date", buf_date);
+    if (strlen(buf_contenttype) > 0)    appendItem(group, "Content-Type", buf_contenttype);
     
     return true;
 }
