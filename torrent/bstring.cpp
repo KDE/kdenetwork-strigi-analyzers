@@ -41,28 +41,28 @@ void BString::init (ByteTape &tape)
 {
 	QByteArray &dict(tape.data());
 
-	kdDebug() << "1. Tape at position "  << tape.pos() << endl;
+	kdDebug(7034) << "1. Tape at position "  << tape.pos() << endl;
 
 	if (dict.find(':', tape.pos()) == -1)
 	{
-		kdDebug() << "Can't find : for string!\n";
+		kdDebug(7034) << "Can't find : for string!" << endl;
 		return;
 	}
 
 	// Copy the part from start to :, as it will be a number
 	// That number is the number of characters to read
 	int length = dict.find(':', tape.pos()) - tape.pos();
-	kdDebug () << "String digit length is apparently " << length << endl;
+	kdDebug(7034) << "String digit length is apparently " << length << endl;
 	char *ptr = dict.data();
 
-	kdDebug() << "2. Tape at position " << tape.pos() << endl;
+	kdDebug(7034) << "2. Tape at position " << tape.pos() << endl;
 	ptr += tape.pos();
 
     QByteArray buffer (length + 1);
     qmemmove (buffer.data(), ptr, length);
 	buffer[length] = 0;
 
-	kdDebug() << "Read " << buffer.data() << " into buffer.\n";
+	kdDebug(7034) << "Read " << buffer.data() << " into buffer." << endl;
 
 	QString numberString (buffer);
 	bool a_isValid;
@@ -70,21 +70,21 @@ void BString::init (ByteTape &tape)
 
 	if (!a_isValid)
 	{
-		kdDebug() << "Invalid string length!\n";
+		kdDebug(7034) << "Invalid string length!" << endl;
 		return;
 	}
 	else
-		kdDebug() << "String length is apparently " << len << endl;
+		kdDebug(7034) << "String length is apparently " << len << endl;
 
 	// Now that we have the length, we need to advance the tape
 	// past the colon
-	kdDebug() << "Trying to move tape " << length << " spaces.\n";
+	kdDebug(7034) << "Trying to move tape " << length << " spaces." << endl;
 	tape += length; // Move to colon
-	kdDebug() << "3. Tape is at " << tape.pos() << endl;
+	kdDebug(7034) << "3. Tape is at " << tape.pos() << endl;
 	if (*tape != ':')
 	{
 		// Sanity check
-		kdDebug() << "SANITY CHECK FAILED. *tape != ':'!\n";
+		kdDebug(7034) << "SANITY CHECK FAILED. *tape != ':'!" << endl;
         return;
 	}
 
@@ -99,7 +99,7 @@ void BString::init (ByteTape &tape)
 	m_data[len] = 0; // Null terminate for convienience
 
 	tape += len;
-	kdDebug() << "String is " << get_string() << endl;
+	kdDebug(7034) << "String is " << get_string() << endl;
 	m_valid = true;
 }
 
@@ -115,7 +115,7 @@ bool BString::writeToDevice(QIODevice &device)
     QString str = QString("%1:").
         arg(get_len());
 
-    kdDebug() << "Writing string " << str << endl;
+    kdDebug(7034) << "Writing string " << str << endl;
     Q_LONG written = 0, result = 0;
 
     written = device.writeBlock (str.latin1(), str.length());

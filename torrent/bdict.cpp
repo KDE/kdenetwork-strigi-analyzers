@@ -42,7 +42,7 @@ void BDict::init (ByteTape &tape)
 {
 	if (*tape != 'd')
 	{
-		kdDebug () << "This isn't a dictionary!\n";
+		kdDebug(7034) << "This isn't a dictionary!" << endl;
 		return; // This isn't a dictionary
 	}
 
@@ -59,7 +59,7 @@ void BDict::init (ByteTape &tape)
 		// Ensure str will be automatically deleted
 		if (!str || !str->isValid())
 		{
-			kdDebug() << (str ? "Invalid string.\n" : "Unable to read String!\n");
+			kdDebug(7034) << (str ? "Invalid string" : "Unable to read String!") << endl;
 			return;
 		}
 
@@ -85,9 +85,8 @@ void BDict::init (ByteTape &tape)
 
 		if (!temp_item || !temp_item->isValid())
 		{
-			kdDebug() << (temp_item ? "Invalid item!\n"
-			                        : "Unable to create keyed data!\n"
-						 );
+			kdDebug(7034) << (temp_item ? "Invalid item!"
+					  : "Unable to create keyed data!") << endl;
 			return;
 		}
 

@@ -150,7 +150,7 @@ bool KTorrentPlugin::readInfo (KFileMetaInfo &info, unsigned int)
 
     if (!m_dict->isValid())
     {
-        kdDebug() << "Invalid torrent file: " << info.path() << endl;
+        kdDebug(7034) << "Invalid torrent file: " << info.path() << endl;
         return false;
     }
     
@@ -345,20 +345,20 @@ bool KTorrentPlugin::writeInfo(const KFileMetaInfo &info) const
     
     for (; it != list.end(); ++it)
     {
-        kdDebug() << "Group: " << *it << endl;
+        kdDebug(7034) << "Group: " << *it << endl;
         
         QStringList list2 = info[*it].keys();
         QStringList::Iterator it2 = list2.begin();
         
         for (; it2 != list2.end(); ++it2)
         {
-            kdDebug() << "\tKey: " << *it2 << endl;
+            kdDebug(7034) << "\tKey: " << *it2 << endl;
             QString key = *it2;
             
             if (info[*it][key].isModified())
             {
                 // Re-enter the entry in the dictionary.
-                kdDebug() << "\t\tIs Modified." << endl;
+                kdDebug(7034) << "\t\tIs Modified." << endl;
                 
                 if (key == "comment")
                 {

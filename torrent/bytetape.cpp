@@ -36,7 +36,7 @@ ByteTape& ByteTape::operator += (const unsigned int i)
 	m_shared->pos += i;
 	if (m_array.size() <= m_shared->pos)
 	{
-		kdDebug() << "Whoops.  Advanced too far.\n";
+		kdDebug(7034) << "Whoops.  Advanced too far." << endl;
 		m_shared->pos = m_array.size() - 1;
 	}
 	
@@ -47,7 +47,7 @@ ByteTape& ByteTape::operator -= (const unsigned int i)
 {
 	if (i > m_shared->pos)
 	{
-		kdDebug() << "Whoops, tried to back up too far.\n";
+		kdDebug(7034) << "Whoops, tried to back up too far." << endl;
 		m_shared->pos = 0;
 	}
 	else
@@ -84,8 +84,8 @@ ByteTape ByteTape::operator ++ (int)
 	if (m_shared->pos >= m_array.size())
 	{
 		m_shared->pos = m_array.size() - 1;
-		kdDebug() << "Tape already at end!\n";
-		kdDebug() << "Tape size is " << m_array.size() << endl;
+		kdDebug(7034) << "Tape already at end!" << endl;
+		kdDebug(7034) << "Tape size is " << m_array.size() << endl;
 	}
 	
 	return temp;
@@ -98,8 +98,8 @@ ByteTape & ByteTape::operator ++()
 	if (m_shared->pos >= m_array.size())
 	{
 		m_shared->pos = m_array.size() - 1;
-		kdDebug() << "Tape already at end!\n";
-		kdDebug() << "Tape size is " << m_array.size() << endl;
+		kdDebug(7034) << "Tape already at end!" << endl;
+		kdDebug(7034) << "Tape size is " << m_array.size() << endl;
 	}
 	
 	return *this;
@@ -115,7 +115,7 @@ ByteTape ByteTape::operator -- (int)
 	if (m_shared->pos != 0)
 		m_shared->pos --;
 	else
-		kdDebug() << "Tape already at beginning!\n";
+		kdDebug(7034) << "Tape already at beginning!" << endl;
 	
 	return temp;
 }
@@ -126,7 +126,7 @@ ByteTape & ByteTape::operator -- ()
 	if (m_shared->pos != 0)
 		m_shared->pos --;
 	else
-		kdDebug() << "Tape already at beginning!\n";
+		kdDebug(7034) << "Tape already at beginning!" << endl;
 	
 	return *this;
 }
@@ -135,7 +135,7 @@ bool ByteTape::setPos (unsigned int pos)
 {
 	if (pos >= m_array.size())
 	{
-		kdDebug() << "Can't set tape to " << pos << "\n";
+		kdDebug(7034) << "Can't set tape to " << pos << endl;
 		return false;
 	}
 
@@ -147,7 +147,7 @@ char* ByteTape::at (const unsigned int i)
 {
 	if (i >= m_array.size())
 	{
-		kdDebug() << "Access to tape at " << i << " out-of-range.\n";
+		kdDebug(7034) << "Access to tape at " << i << " out-of-range." << endl;
 		return 0;
 	}
 		
