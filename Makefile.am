@@ -1,1 +1,1 @@
-SUBDIRS=vcf rfc822
+SUBDIRS=rfc822
