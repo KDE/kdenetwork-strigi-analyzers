@@ -40,7 +40,7 @@ typedef unsigned short uint32_t;
 
 typedef KGenericFactory<KRfc822Plugin> Rfc822Factory;
 
-K_EXPORT_COMPONENT_FACTORY(kfile_rfc822, Rfc822Factory( "kfile_rfc822" ));
+K_EXPORT_COMPONENT_FACTORY(kfile_rfc822, Rfc822Factory( "kfile_rfc822" ))
 
 KRfc822Plugin::KRfc822Plugin(QObject *parent, const char *name,
                        const QStringList &args)
@@ -86,7 +86,7 @@ bool KRfc822Plugin::readInfo( KFileMetaInfo& info, uint /*what*/ )
     char id_contenttype[] = "Content-Type: ";
     
     // we need a buffer for lines
-    char linebuf[1000];
+    char linebuf[4096];
 
     // we need a buffer for other stuff
     char buf_from[1000] = "";
@@ -106,29 +106,34 @@ bool KRfc822Plugin::readInfo( KFileMetaInfo& info, uint /*what*/ )
     while (!done) {
     
         // read a line
-        file.readLine(linebuf, 4096);
+        file.readLine(linebuf, 4095);
         
         // have we got something useful?
         if (memcmp(linebuf, id_from, 6) == 0) {
             // we have a name
             myptr = linebuf + 6;
             strncpy(buf_from, myptr, 999);
+            buf_from[998]='\0';
         } else if (memcmp(linebuf, id_to, 4) == 0) {
             // we have a name
             myptr = linebuf + 4;
             strncpy(buf_to, myptr, 999);
+            buf_to[998]='\0';
         } else if (memcmp(linebuf, id_subject, 9) == 0) {
             // we have a name
             myptr = linebuf + 9;
             strncpy(buf_subject, myptr, 999);
+            buf_subject[998]='\0';
         } else if (memcmp(linebuf, id_date, 6) == 0) {
             // we have a name
             myptr = linebuf + 6;
             strncpy(buf_date, myptr, 999);
+            buf_date[998]='\0';
         } else if (memcmp(linebuf, id_contenttype, 14) == 0) {
             // we have a name
             myptr = linebuf + 14;
             strncpy(buf_contenttype, myptr, 999);
+            buf_contenttype[998]='\0';
         }
         
         // are we done yet?
