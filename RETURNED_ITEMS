@@ -10,5 +10,5 @@ String     From            -/-    Name/email of sender
 String     To              -/-    Name/email of recipient
 String     Subject         -/-    Subject line of message
 String     Date            -/-    Date stamped in message
-
+String     Content-Type    -/-    Content type declared in headers
 
