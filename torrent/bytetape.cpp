@@ -21,85 +21,69 @@
 #include "bytetape.h"
 
 ByteTape::ByteTape (QByteArray &array, int pos)
-	: m_array(array), m_pos(0), m_refcount (0)
+	: m_array(array), m_shared(new ByteTapeShared)
 {
-	// This is a constructor for a QByteArray, so allocate new data.
-	
-	m_refcount = new uint (1); // If this fails, the user has other problems
-	m_pos = new uint (pos);
+	m_shared->pos = 0;
 }
 
 ByteTape::ByteTape (const ByteTape &tape)
-	: m_array(tape.m_array), m_pos(tape.m_pos), m_refcount(tape.m_refcount)
+	: m_array(tape.m_array), m_shared(tape.m_shared)
 {
-	// We use the same pointer for the reference count.  But we need
-	// to increase it as well.  This poses multi-threading issues.  This
-	// class is NOT thread safe as it stands.
-	
-	(*m_refcount)++;
 }
 
-ByteTape::~ByteTape()
+ByteTape& ByteTape::operator += (const unsigned int i)
 {
-	(*m_refcount)--;
-
-	if (*m_refcount == 0)
+	m_shared->pos += i;
+	if (m_array.size() <= m_shared->pos)
 	{
-		delete m_pos;
-		delete m_refcount;
-	}
-}
-
-ByteTape& ByteTape::operator += (const int i)
-{
-	kdDebug() << "tape+= " << i << endl;
-	
-	kdDebug() << "m_pos = " << (*m_pos) << endl;
-	(*m_pos) += i;
-	kdDebug() << "m_pos = " << (*m_pos) << endl;
-	if (m_array.size() <= (*m_pos))
-	{
-		kdDebug() << "Whoops.  Moved too far.\n";
-		(*m_pos) = m_array.size() - 1;
+		kdDebug() << "Whoops.  Advanced too far.\n";
+		m_shared->pos = m_array.size() - 1;
 	}
 	
 	return *this;
 }
 
-ByteTape& ByteTape::operator -= (const int i)
+ByteTape& ByteTape::operator -= (const unsigned int i)
 {
-	if ((uint) i > *m_pos)
-		*m_pos = 0;
+	if (i > m_shared->pos)
+	{
+		kdDebug() << "Whoops, tried to back up too far.\n";
+		m_shared->pos = 0;
+	}
 	else
-		(*m_pos) -= i;
+		m_shared->pos -= i;
 	
 	return *this;
 }
 
-char ByteTape::operator [] (const uint i)
+char ByteTape::operator [] (const unsigned int i)
 {
 	if (i < m_array.size())
 		return m_array[i];
 	else
 	{
-		kdDebug() << "Can't dereference tape at " << i << endl;
+		kdWarning() << "Can't dereference tape at " << i
+		            << ", size is " << m_array.size() << endl;
 		return 0;
 	}
 }
 
 char &ByteTape::operator * ()
 {
-	return m_array[*m_pos];
+	return m_array[m_shared->pos];
 }
 
+// Postfix increment
 ByteTape ByteTape::operator ++ (int)
 {
-	// Postfix increment
-	ByteTape temp(*this);
-	(*m_pos) ++;
-	if ((*m_pos) >= m_array.size())
+	// Can't use copy ctor, as we'll be copying shared data, which defeats
+	// the semantics of the postfix operator.
+	ByteTape temp(m_array, m_shared->pos);
+	m_shared->pos ++;
+
+	if (m_shared->pos >= m_array.size())
 	{
-		(*m_pos) = m_array.size() - 1;
+		m_shared->pos = m_array.size() - 1;
 		kdDebug() << "Tape already at end!\n";
 		kdDebug() << "Tape size is " << m_array.size() << endl;
 	}
@@ -107,41 +91,47 @@ ByteTape ByteTape::operator ++ (int)
 	return temp;
 }
 
+// Prefix increment
 ByteTape & ByteTape::operator ++()
 {
-	(*m_pos) ++;
-	if ((*m_pos) >= m_array.size())
+	m_shared->pos ++;
+	if (m_shared->pos >= m_array.size())
 	{
-		(*m_pos) = m_array.size() - 1;
+		m_shared->pos = m_array.size() - 1;
 		kdDebug() << "Tape already at end!\n";
+		kdDebug() << "Tape size is " << m_array.size() << endl;
 	}
 	
 	return *this;
 }
 
+// Postfix decrement
 ByteTape ByteTape::operator -- (int)
 {
-	ByteTape temp(*this);
+	// Can't use copy ctor, as we'll be copying shared data, which defeats
+	// the semantics of the postfix operator.
+	ByteTape temp(m_array, m_shared->pos);
 
-	if (*m_pos != 0)
-		(*m_pos) --;
+	if (m_shared->pos != 0)
+		m_shared->pos --;
 	else
 		kdDebug() << "Tape already at beginning!\n";
 	
 	return temp;
 }
 
+// Prefix decrement
 ByteTape & ByteTape::operator -- ()
 {
-	if (*m_pos != 0)
-		(*m_pos) --;
+	if (m_shared->pos != 0)
+		m_shared->pos --;
 	else
 		kdDebug() << "Tape already at beginning!\n";
 	
 	return *this;
 }
 
-bool ByteTape::setPos (uint pos)
+bool ByteTape::setPos (unsigned int pos)
 {
 	if (pos >= m_array.size())
 	{
@@ -149,11 +139,11 @@ bool ByteTape::setPos (uint pos)
 		return false;
 	}
 
-	(*m_pos) = pos;
+	m_shared->pos = pos;
 	return true;
 }
 
-char* ByteTape::at (const uint i)
+char* ByteTape::at (const unsigned int i)
 {
 	if (i >= m_array.size())
 	{
@@ -163,3 +153,5 @@ char* ByteTape::at (const uint i)
 		
 	return m_array.data() + i;
 }
+
+// vim: set noet ts=4 sw=4:

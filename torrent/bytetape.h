@@ -19,7 +19,16 @@
 #ifndef _BYTETAPE_H
 #define _BYTETAPE_H
 
+#include <ksharedptr.h>
+
 #include <qcstring.h>
+
+class ByteTapeShared : public KShared
+{
+	public:
+
+	unsigned int pos;
+};
 
 /**
  * Class to simulate a seekable byte stream.  Very similar to QByteArray,
@@ -57,12 +66,6 @@ class ByteTape
 	ByteTape (const ByteTape &tape);
 
 	/**
-	 * Destroys the ByteTape.  If this was the last object to use
-	 * the array, then storage for the array will be freed as well.
-	 */
-	~ByteTape ();
-
-	/**
 	 * Increments the current position by @p i.  It is the responsibility
 	 * of the function caller to ensure that the new position is in bounds.
 	 * The position will be capped to remain in bounds regardless.
@@ -70,7 +73,7 @@ class ByteTape
 	 * @param i the amount to increment the current position by
 	 * @return t reference to the object incremented
 	 */
-	ByteTape & operator += (const int i);
+	ByteTape & operator += (const unsigned int i);
 
 	/**
 	 * Decrements the current position by @p i.  It is the responsibility
@@ -82,7 +85,7 @@ class ByteTape
 	 * @param i the amount to decrement the current position by
 	 * @return a reference to the object decremented
 	 */
-	ByteTape & operator -= (const int i);
+	ByteTape & operator -= (const unsigned int i);
 
 	/**
 	 * Increments the current position by 1.  This is a postfix
@@ -135,7 +138,7 @@ class ByteTape
 	 * @return the byte at the given index.  0 may be returned on error,
 	 *         but does not necessarily indicate an error.
 	 */
-	char operator [] (const uint i);
+	char operator [] (const unsigned int i);
 
 	/**
 	 * Returns the byte at the tape's current position.  You can assign
@@ -154,14 +157,14 @@ class ByteTape
 	 * @return 0 if @p i is out of range, else the address of memory
 	 *         at that index
 	 */
-	char *at(const uint i);
+	char *at(const unsigned int i);
 
 	/**
 	 * Returns the current position of the tape head.
 	 *
 	 * @return the tape head's current position
 	 */
-	uint pos() const { return *m_pos; }
+	unsigned int pos() const { return m_shared->pos; }
 
 	/**
 	 * Sets the current position of the tape head to @p pos.  If the
@@ -171,7 +174,7 @@ class ByteTape
 	 * @param pos the new position of the tape head
 	 * @return whether the set operation was successful
 	 */
-	bool setPos(uint pos);
+	bool setPos(unsigned int pos);
 
 	/**
 	 * Returns a reference to the QByteArray used to hold all the data.
@@ -183,7 +186,9 @@ class ByteTape
 
 	private:
 	QByteArray &m_array; 
-	uint *m_pos, *m_refcount;
+	KSharedPtr<ByteTapeShared> m_shared;
 };
 
 #endif /* _BYTETAPE_H */
+
+// vim: set noet ts=4 sw=4:
