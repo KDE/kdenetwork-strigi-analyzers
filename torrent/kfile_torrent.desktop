@@ -2,20 +2,26 @@
 Encoding=UTF-8
 Type=Service
 Name=Bit Torrent Info
+Name[br]=Titouriñ war Bit Torrent
+Name[ca]=Informació de Bit Torrent
 Name[da]=info om bit-torrent
 Name[de]=Bit Torrent Informationen
 Name[es]=Información Bit Torrent
 Name[et]=Bit Torrenti info
+Name[eu]=Bit-torrent informazioa
 Name[fr]=Infos Bit Torrent
+Name[is]=Bit Torrent upplýsingar
 Name[mk]=Информации за Bit Torrent
 Name[nl]=Bittorent-informatie
 Name[pt]=Informações Bit Torrent
-Name[pt_BR]=Informações Bit Torrent
+Name[pt_BR]=Informações do Bit Torrent
 Name[ru]=Сведения о BitTorrent
 Name[sv]=Information om Bit Torrent
 Name[ta]=பிட் டோர்ரெண்ட் தகவல்
 Name[tr]=Bit Torrent Bilgisi
 Name[uk]=Інформація про Bit Torrent
+Name[xx]=xxBit Torrent Infoxx
+Name[zh_CN]=BitTorrent 信息
 ServiceTypes=KFilePlugin
 X-KDE-Library=kfile_torrent
 # change MimeType here! (example: inode/directory)
