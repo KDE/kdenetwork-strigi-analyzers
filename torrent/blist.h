@@ -50,7 +50,7 @@ class BList : public BBase
 	 * @param start the position in the buffer to start
 	 *        reading from
 	 */
-	BList (QByteArray &dict, int start = 0);
+	BList (QByteArray &dict, unsigned int start = 0);
 
 	/**
 	 * Construct a BList from @p tape.  Any changes made to
@@ -83,7 +83,7 @@ class BList : public BBase
 	 *
 	 * @return number of items in the list
 	 */	
-	virtual int count() const { return m_array.count(); }
+	virtual unsigned int count() const { return m_array.count(); }
 
 	/**
 	 * This function should be called to determine whether the
@@ -102,7 +102,7 @@ class BList : public BBase
 	 * @return pointer to the appropriate BBase, or 0 if
 	 *         the index is out-of-bounds
 	 */
-	inline BBase * index (int i);
+	inline BBase * index (unsigned int i);
 	
 	/**
 	 * Convience function to return a pointer to the appropriate
@@ -114,7 +114,7 @@ class BList : public BBase
 	 *         will be returned instead, even if it was a valid
 	 *         BBase.
 	 */
-	BList *   indexList (int i);
+	BList *   indexList (unsigned int i);
 	
 	/**
 	 * Convience function to return a pointer to the appropriate
@@ -126,7 +126,7 @@ class BList : public BBase
 	 *         will be returned instead, even if it was a valid
 	 *         BBase.
 	 */
-	BInt *    indexInt (int i);  
+	BInt *    indexInt (unsigned int i);  
 	
 	/**
 	 * Convience function to return a pointer to the appropriate
@@ -138,7 +138,7 @@ class BList : public BBase
 	 *         will be returned instead, even if it was a valid
 	 *         BBase.
 	 */
-	BDict *   indexDict (int i);
+	BDict *   indexDict (unsigned int i);
 	
 	/**
 	 * Convience function to return a pointer to the appropriate
@@ -150,7 +150,7 @@ class BList : public BBase
 	 *         will be returned instead, even if it was a valid
 	 *         BBase.
 	 */
-	BString * indexStr (int i);
+	BString * indexStr (unsigned int i);
 	
 	/**
 	 * Returns an iterator to the first element in the list.

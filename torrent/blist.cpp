@@ -28,7 +28,7 @@ BList::BList (ByteTape &tape)
 	init (tape);
 }
 
-BList::BList (QByteArray &dict, int start)
+BList::BList (QByteArray &dict, unsigned int start)
 	: m_valid(false), m_array()
 {
 	ByteTape tape (dict, start);
@@ -86,7 +86,7 @@ BList::~BList()
 		delete *iter;
 }
 
-BBase* BList::index (int i)
+BBase* BList::index (unsigned int i)
 {
 	if ((i < 0) || (i >= count()))
 		return 0;
@@ -94,7 +94,7 @@ BBase* BList::index (int i)
 		return m_array[i];
 }
 
-BList * BList::indexList (int i)
+BList * BList::indexList (unsigned int i)
 {
 	BBase *base = index(i);
 
@@ -104,7 +104,7 @@ BList * BList::indexList (int i)
 	return 0;
 }
 
-BInt * BList::indexInt (int i)
+BInt * BList::indexInt (unsigned int i)
 {
 	BBase *base = index(i);
 
@@ -114,7 +114,7 @@ BInt * BList::indexInt (int i)
 	return 0;
 }
 
-BDict * BList::indexDict (int i)
+BDict * BList::indexDict (unsigned int i)
 {
 	BBase *base = index(i);
 
@@ -124,7 +124,7 @@ BDict * BList::indexDict (int i)
 	return 0;
 }
 
-BString * BList::indexStr (int i)
+BString * BList::indexStr (unsigned int i)
 {
 	BBase *base = index(i);
 

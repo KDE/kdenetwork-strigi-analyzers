@@ -39,43 +39,45 @@ class KTorrentPlugin : public KFilePlugin
 	Q_OBJECT
 
 	public:
-		/**
-		 * Constructs the class, and prepares for reading info on a torrent.
-		 *
-		 * @param parent the parent of this object
-		 * @param name the name of this object (not user-readable)
-		 * @param args unused by this class
-		 */
-		KTorrentPlugin (QObject *parent, const char *name, const QStringList &args);
-        
-        /**
-         * Destructor that closes the dictionary holding the torrent information.
-         */
-         ~KTorrentPlugin () { delete m_dict; }
+	/**
+	 * Constructs the class, and prepares for reading info on a torrent.
+	 *
+	 * @param parent the parent of this object
+	 * @param name the name of this object (not user-readable)
+	 * @param args unused by this class
+	 */
+	KTorrentPlugin (QObject *parent, const char *name, const QStringList &args);
 
-		/**
-		 * Reads information on a torrent file given by @p info.
-		 *
-		 * @param info information on the file to decode
-		 * @return true if the meta info was successfully detected and added,
-		 *         false otherwise.
-		 */
-		virtual bool readInfo (KFileMetaInfo& info, uint);
-        
-        /**
-         * Writes information on a torrent file given by @p info.  
-         * BitTorrent are practically nothing but meta information.
-         * Therefore, the entire file might be changed.
-         *
-         * @param info information on the file to encode
-         * @return true if the meta info was successfully updated, 
-         *         false otherwise
-         */
-        virtual bool writeInfo (const KFileMetaInfo& info) const;
-	
+	/**
+	 * Destructor that closes the dictionary holding the torrent information.
+	 */
+	~KTorrentPlugin () { delete m_dict; }
+
+	/**
+	 * Reads information on a torrent file given by @p info.
+	 *
+	 * @param info information on the file to decode
+	 * @return true if the meta info was successfully detected and added,
+	 *         false otherwise.
+	 */
+	virtual bool readInfo (KFileMetaInfo& info, unsigned int);
+
+	/**
+	 * Writes information on a torrent file given by @p info.
+	 * BitTorrent are practically nothing but meta information.
+	 * Therefore, the entire file might be changed.
+	 *
+	 * @param info information on the file to encode
+	 * @return true if the meta info was successfully updated,
+	 *         false otherwise
+	 */
+	virtual bool writeInfo (const KFileMetaInfo& info) const;
+
 	private:
-		bool m_failed;
-        BDict *m_dict;
+	bool m_failed;
+	BDict *m_dict;
 };
 
 #endif /* _KFILE_TORRENT_H */
+
+// vim: set noet ts=4 sw=4:

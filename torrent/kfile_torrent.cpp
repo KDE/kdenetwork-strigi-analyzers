@@ -19,9 +19,11 @@
 #include <qdatetime.h>
 #include <qfile.h>
 #include <qregexp.h>
+#include <qdir.h>
+#include <qstringlist.h>
+
 #include <kmessagebox.h>
 #include <kgenericfactory.h>
-#include <qstringlist.h>
 
 #include "kfile_torrent.h"
 #include "bdict.h"
@@ -33,7 +35,7 @@ typedef KGenericFactory<KTorrentPlugin> TorrentFactory;
 K_EXPORT_COMPONENT_FACTORY(kfile_torrent, TorrentFactory("kfile_torrent"))
 
 QStringList filesList (BList *list);
-uint filesLength (BList *list);
+unsigned int filesLength (BList *list);
 
 KTorrentPlugin::KTorrentPlugin (QObject *parent, const char *name,
                                 const QStringList &args)
@@ -115,7 +117,7 @@ KTorrentPlugin::KTorrentPlugin (QObject *parent, const char *name,
     m_failed = false;
 }
 
-bool KTorrentPlugin::readInfo (KFileMetaInfo &info, uint)
+bool KTorrentPlugin::readInfo (KFileMetaInfo &info, unsigned int)
 {
     /* Since we don't throw during the ctor, check here whether we actually
      * are valid are not.  If not, die.
@@ -174,70 +176,66 @@ bool KTorrentPlugin::readInfo (KFileMetaInfo &info, uint)
         if (!the_data)
             return false;
 
-        uint the_time = the_data->get_value();
+        unsigned int the_time = the_data->get_value();
         
         /* Hopefully the_time is UTC, because that's what QDateTime does. */
         my_date.setTime_t (the_time);
         appendItem (group, "creation date", my_date);
     }
 
-    if (m_dict->contains ("info"))
-    {
-        BDict *info_dict = m_dict->findDict("info");
-        int num_files = 1, length = 0;
+    // A valid torrent must have the info dict, no reason to check twice for
+    // it.
+    BDict *info_dict = m_dict->findDict("info");
+    int num_files = 1, length = 0;
+    
+    if (!info_dict)
+        return false;
         
-        if (!info_dict)
+    if (!info_dict->contains("length"))
+    {
+        /* Has more than one file.  The list of files is contained in a
+         * list called, appropriately enough, 'files'
+         */
+        BList *info_list = info_dict->findList("files");
+        if (!info_list)
+            return false;
+        
+        num_files = info_list->count();
+        length = filesLength (info_list);
+    }
+    else
+    {
+        /* Only one file, let's put its length */
+        BInt *blength = info_dict->findInt("length");
+        if (!blength)
             return false;
             
-        if (!info_dict->contains("length"))
-        {
-            /* Has more than one file.  The list of files is contained in a
-             * list called, appropriately enough, 'files'
-             */
-            BList *info_list = info_dict->findList("files");
-            if (!info_list)
-                return false;
+        length = blength->get_value();
+    }
+
+    appendItem (group, "NumFiles", num_files);
+    appendItem (group, "length", length);
+
+    if (info_dict->contains("name"))
+    {
+        BString *str = info_dict->findStr("name");
+        if (!str)
+            return false;
             
-            num_files = info_list->count();
-            length = filesLength (info_list);
-        }
-        else
-        {
-            /* Only one file, let's put its length */
-            BInt *blength = info_dict->findInt("length");
+        QString real_str (str->get_string());
 
-            if (!blength)
-                return false;
-                
-            length = blength->get_value();
-        }
+        if (num_files > 1 && !real_str.endsWith("/"))
+            real_str.append('/');
 
-        appendItem (group, "NumFiles", num_files);
-        appendItem (group, "length", length);
+        appendItem (group, "name", real_str);
+    }
 
-        if (info_dict->contains("name"))
-        {
-            BString *str = info_dict->findStr("name");
-            if (!str)
-                return false;
-                
-            QString real_str (str->get_string());
-
-            if (num_files > 1 && !real_str.endsWith("/"))
-                real_str.append('/');
-
-            appendItem (group, "name", real_str);
-        }
-
-        if (info_dict->contains("piece length"))
-        {
-            BInt *piece_length = info_dict->findInt("piece length");
-            if (!piece_length)
-                return false;
-                
-            appendItem (group, "piece length", piece_length->get_value());
-        }
-    } // if m_dict (info)
+    // piece length is required as well
+    BInt *piece_length = info_dict->findInt("piece length");
+    if (!piece_length)
+        return false;
+        
+    appendItem (group, "piece length", piece_length->get_value());
 
     if (m_dict->contains("comment"))
     {
@@ -247,6 +245,8 @@ bool KTorrentPlugin::readInfo (KFileMetaInfo &info, uint)
             
         appendItem (group, "comment", comment->get_string());
     }
+    else
+        appendItem (group, "comment", QString());
 
     return true;
 }
@@ -257,10 +257,9 @@ bool KTorrentPlugin::readInfo (KFileMetaInfo &info, uint)
  */
 QStringList filesList (BList *list)
 {
-    BBaseVectorIterator list_iter = list->begin();
-    QStringList str_list;
+    QStringList str_list, failList;
 
-    for ( ; list_iter != list->end(); ++list_iter)
+    for (unsigned int i = 0; i < list->count(); ++i)
     {
         /* Each item in this list is a dictionary, composed as follows:
          * length -> BInt (size of file)
@@ -269,21 +268,34 @@ QStringList filesList (BList *list)
          * last element of the list is the file name.
          */
 
-        BDict *list_dict = dynamic_cast<BDict*>(*list_iter);
-        BList *list_path = dynamic_cast<BList*>(list_dict->find("path"));
-        QString str;
+        BDict *list_dict = list->indexDict(i);
+        if (!list_dict)
+            return failList;
 
-        BBaseVectorIterator str_iter = list_path->begin();
-        BString *temp_str = dynamic_cast<BString*>(*str_iter);
-        
-        if (str_iter != list_path->end())
+        BList *list_path = list_dict->findList("path");
+        if (!list_path)
+            return failList;
+
+        QString str;
+        BString *temp_str;
+
+        if (list_path->count() > 0)
+        {
+            temp_str = list_path->indexStr (0);
+            if (!temp_str)
+                return failList;
+
             str.append (temp_str->get_string());
+        }
 
         /* Construct QString consisting of path and file name */
-        for (++str_iter; str_iter != list_path->end(); ++str_iter)
+        for (unsigned int j = 1; j < list_path->count(); ++j)
         {
-            str.append ('/'); /* Add path separator */
-            temp_str = dynamic_cast<BString*>(*str_iter);
+            str.append (QDir::separator());
+            temp_str = list_path->indexStr (j);
+            if (!temp_str)
+                return failList;
+
             str.append (temp_str->get_string());
         }
 
@@ -296,20 +308,24 @@ QStringList filesList (BList *list)
 /* This function determines the total length of a torrent stream.
  * The list provided should be the same one provided for filesList.
  */
-uint filesLength (BList *list)
+unsigned int filesLength (BList *list)
 {
-    BBaseVectorIterator list_iter = list->begin();
     int length = 0;
 
-    for ( ; list_iter != list->end(); ++list_iter)
+    for (unsigned int i = 0; i < list->count(); ++i)
     {
         /* Each item in this list is a dictionary, composed as follows:
          * length -> BInt (size of file)
          * path -> BList (list of strings)
          */
 
-        BDict *list_dict = dynamic_cast<BDict*>(*list_iter);
-        BInt *bfile_len = dynamic_cast<BInt*>(list_dict->find("length"));
+        BDict *list_dict = list->indexDict(i);
+        if (!list_dict)
+            return 0;
+
+        BInt *bfile_len = list_dict->findInt("length");
+        if (!bfile_len)
+            return 0;
 
         length += bfile_len->get_value();
     }
@@ -347,12 +363,21 @@ bool KTorrentPlugin::writeInfo(const KFileMetaInfo &info) const
                 if (key == "comment")
                 {
                     BString *b_str = m_dict->findStr("comment");
+                    if (!b_str)
+                        return false;
+
                     b_str->setValue (info[*it][key].value().toString());
                 }
                 else if (key == "name")
                 {
                     BDict *info_dict = m_dict->findDict ("info");
+                    if (!info_dict)
+                        return false;
+
                     BString *name_str = info_dict->findStr ("name");
+                    if (!name_str)
+                        return false;
+
                     QString the_name = info[*it][key].value().toString();
                     
                     // Remove trailing slashes
