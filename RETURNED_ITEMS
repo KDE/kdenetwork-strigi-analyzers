@@ -1,0 +1,15 @@
+If you make a new plugin, please add the list of returned items to this list.
+
+torrent plugin:
+===========
+
+type       tag               comment
+==============================================================================
+String     name              Default file/directory name.
+Int        length            In Bytes, not the size of the .torrent.
+String     announce          URL of the tracker server.
+Date       creation date     Date the .torrent was generated.
+Int        NumFiles          The number of files the .torrent will download.
+Int        piece length      The block size used for this torrent.  Each block
+                             is downloaded and hashed separately.
+String     comment

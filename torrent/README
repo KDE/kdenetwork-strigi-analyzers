@@ -1,0 +1,7 @@
+This is a meta information plugin for BitTorrent files (*.torrent).
+
+It doesn't depend on BitTorrent or any non-standard library being installed.
+
+The .torrent files used by BitTorrent are coded in what is called a b-encoding
+by the BitTorrent author.  Please see the actual kfile plugin source code for
+more information on the encoding.
