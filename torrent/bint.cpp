@@ -24,55 +24,55 @@
 // A bencoded int is (approximately) as follows:
 // i(\d)+e
 BInt::BInt (QByteArray &dict, int start)
-	: m_value (0), m_valid(false)
+    : m_value (0), m_valid(false)
 {
-	ByteTape tape (dict, start);
-	init (tape);
+    ByteTape tape (dict, start);
+    init (tape);
 }
 
 BInt::BInt (ByteTape &tape)
-	: m_value(0), m_valid(false)
+    : m_value(0), m_valid(false)
 {
-	init(tape);
+    init(tape);
 }
 
 void BInt::init (ByteTape &tape)
 {
-	if (*tape != 'i')
-		return;
+    if (*tape != 'i')
+        return;
 
-	tape ++; // Move to start of digits
+    tape ++; // Move to start of digits
 
-	QByteArray &dict (tape.data());
-	if (dict.find('e', tape.pos()) == -1)
-		return;
+    QByteArray &dict (tape.data());
+    if (dict.find('e', tape.pos()) == -1)
+        return;
 
-	// Copy the part from the start to the e.  The values in-between
-	// should be digits, perhaps preceded by a negative sign.
-	int length = dict.find('e', tape.pos()) - tape.pos();
-	char *ptr = dict.data(); // Get start of buffer
-	ptr += tape.pos(); // Advance to current position in tape
+    // Copy the part from the start to the e.  The values in-between
+    // should be digits, perhaps preceded by a negative sign.
+    int length = dict.find('e', tape.pos()) - tape.pos();
+    char *ptr = dict.data(); // Get start of buffer
+    ptr += tape.pos(); // Advance to current position in tape
 
-	// Allocate temporary data buffer
+    // Allocate temporary data buffer
     QByteArray buffer(length + 1);
 
-	qmemmove (buffer.data(), ptr, length);
-	buffer[length] = 0; // Null-terminate
+    qmemmove (buffer.data(), ptr, length);
+    buffer[length] = 0; // Null-terminate
 
-	QString numberString (buffer);
-	bool a_isValid; // We want to make sure the string is a valid number
+    QString numberString (buffer);
+    bool a_isValid; // We want to make sure the string is a valid number
 
-	m_value = numberString.toInt(&a_isValid);
+    m_value = numberString.toLongLong(&a_isValid);
 
-	tape += length; // Move to 'e'
-	tape ++;        // Move to next char
+    tape += length; // Move to 'e'
+    tape ++;        // Move to next char
 
-	m_valid = a_isValid; // Now we're good, if it was a number
+    m_valid = a_isValid; // Now we're good, if it was a number
 }
 
 BInt::~BInt()
 {
-	/* Nothing yet */
+    /* Nothing yet */
 }
 
 bool BInt::writeToDevice (QIODevice &device)
@@ -98,3 +98,5 @@ bool BInt::writeToDevice (QIODevice &device)
 
     return true;
 }
+
+// vim: set et ts=4 sw=4:

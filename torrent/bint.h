@@ -66,7 +66,7 @@ class BInt : public BBase
 	 *
 	 * @return this object's integer value
 	 */
-	int get_value () const { return m_value; }
+	Q_LLONG get_value () const { return m_value; }
 
 	/**
 	 * Returns the type of this class.
@@ -102,7 +102,7 @@ class BInt : public BBase
 	 */
 	void init(ByteTape &tape);
 
-	int m_value;
+	Q_LLONG m_value;
 	bool m_valid;
 };
 
