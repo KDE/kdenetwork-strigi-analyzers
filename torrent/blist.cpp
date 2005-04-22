@@ -88,7 +88,7 @@ BList::~BList()
 
 BBase* BList::index (unsigned int i)
 {
-	if ((i < 0) || (i >= count()))
+	if (i >= count())
 		return 0;
 	else
 		return m_array[i];

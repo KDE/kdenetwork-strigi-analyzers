@@ -35,7 +35,7 @@ typedef KGenericFactory<KTorrentPlugin> TorrentFactory;
 K_EXPORT_COMPONENT_FACTORY(kfile_torrent, TorrentFactory("kfile_torrent"))
 
 QStringList filesList (BList *list);
-unsigned int filesLength (BList *list);
+Q_ULLONG filesLength (BList *list);
 
 KTorrentPlugin::KTorrentPlugin (QObject *parent, const char *name,
                                 const QStringList &args)
@@ -68,7 +68,7 @@ KTorrentPlugin::KTorrentPlugin (QObject *parent, const char *name,
     setHint (item, KFileMimeTypeInfo::Name);
     setAttributes (item, KFileMimeTypeInfo::Modifiable);
     
-    item = addItemInfo(group, "length", i18n("Torrent Length"), QVariant::Int);
+    item = addItemInfo(group, "length", i18n("Torrent Length"), QVariant::ULongLong);
     if (!item)
     {
         kdError() << "Error adding Length to group!\n";
@@ -192,7 +192,8 @@ bool KTorrentPlugin::readInfo (KFileMetaInfo &info, unsigned int)
     // A valid torrent must have the info dict, no reason to check twice for
     // it.
     BDict *info_dict = m_dict->findDict("info");
-    int num_files = 1, length = 0;
+    int num_files = 1;
+    Q_ULLONG length = 0;
     
     if (!info_dict)
         return false;
@@ -314,9 +315,9 @@ QStringList filesList (BList *list)
 /* This function determines the total length of a torrent stream.
  * The list provided should be the same one provided for filesList.
  */
-unsigned int filesLength (BList *list)
+Q_ULLONG filesLength (BList *list)
 {
-    int length = 0;
+    Q_ULLONG length = 0;
 
     for (unsigned int i = 0; i < list->count(); ++i)
     {

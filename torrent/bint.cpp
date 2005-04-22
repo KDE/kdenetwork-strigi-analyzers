@@ -62,7 +62,7 @@ void BInt::init (ByteTape &tape)
 	QString numberString (buffer);
 	bool a_isValid; // We want to make sure the string is a valid number
 
-	m_value = numberString.toInt(&a_isValid);
+	m_value = numberString.toLongLong(&a_isValid);
 
 	tape += length; // Move to 'e'
 	tape ++;        // Move to next char

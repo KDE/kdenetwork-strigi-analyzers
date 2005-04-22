@@ -102,7 +102,7 @@ class BInt : public BBase
 	 */
 	void init(ByteTape &tape);
 
-	int m_value;
+	Q_LLONG m_value;
 	bool m_valid;
 };
 
