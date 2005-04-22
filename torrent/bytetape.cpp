@@ -23,7 +23,7 @@
 ByteTape::ByteTape (QByteArray &array, int pos)
 	: m_array(array), m_shared(new ByteTapeShared)
 {
-	m_shared->pos = 0;
+	m_shared->pos = pos;
 }
 
 ByteTape::ByteTape (const ByteTape &tape)
