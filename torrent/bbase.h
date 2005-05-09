@@ -20,7 +20,8 @@
 #define _BBASE_H
 
 #include <ksharedptr.h>
-#include <qiodevice.h>
+
+class QIODevice;
 
 /**
  * Abstract base class for the b-encoded types.  Re-implemented
@@ -37,52 +38,54 @@
 // Derive from KShared to enable use of KSharedPtr.
 class BBase : public KShared
 {
-	public:
+    public:
 
-	/**
-	 * Identifies the particular class that has been instantiated.  All
-	 * subclasses of this class should have an identifier here.
-	 */
-	enum classID { 
-		bBase,   /**< This class is BBase.  No subclass should return this. */
-		bString, /**< This class is a BString. */
-		bInt,    /**< This class is a BInt. */
-		bList,   /**< This class is a BList. */
-		bDict    /**< This class is a BDict. (Dictionary/Map) */
-	};
+    /**
+     * Identifies the particular class that has been instantiated.  All
+     * subclasses of this class should have an identifier here.
+     */
+    enum classID { 
+        bBase,   /**< This class is BBase.  No subclass should return this. */
+        bString, /**< This class is a BString. */
+        bInt,    /**< This class is a BInt. */
+        bList,   /**< This class is a BList. */
+        bDict    /**< This class is a BDict. (Dictionary/Map) */
+    };
 
-	/**
-	 * Returns the type identification of the object.  It will
-	 * be a value in the classID enum.  A subclass of this class
-	 * must implement this function.
-	 *
-	 * @return type identifier of the class
-	 * @see classID
-	 */
-	virtual classID type_id() const = 0;
+    /**
+     * Returns the type identification of the object.  It will
+     * be a value in the classID enum.  A subclass of this class
+     * must implement this function.
+     *
+     * @return type identifier of the class
+     * @see classID
+     */
+    virtual classID type_id() const = 0;
 
-	/**
-	 * Destructor for the class.  This function must be reimplemented
-	 * in subclasses.
-	 */
-	virtual ~BBase () { ; }
+    /**
+     * Destructor for the class.  This function must be reimplemented
+     * in subclasses.
+     */
+    virtual ~BBase () { ; }
 
-	/**
-	 * Returns the validity status of the object.  Newly constructed
-	 * objects are invalid unless the initialization sequence completed
-	 * successfully.
-	 *
-	 * @return the validity status of the object
-	 */
-	virtual bool isValid() const = 0;
-	
-	/**
-	 * Outputs the b-encoded representation of the object to the given
-	 * QIODevice.
-	 * @param device the QIODevice to write to
-	 * @return true on a successful write, false otherwise
-	 */
-	virtual bool writeToDevice (QIODevice &device) = 0;
+    /**
+     * Returns the validity status of the object.  Newly constructed
+     * objects are invalid unless the initialization sequence completed
+     * successfully.
+     *
+     * @return the validity status of the object
+     */
+    virtual bool isValid() const = 0;
+    
+    /**
+     * Outputs the b-encoded representation of the object to the given
+     * QIODevice.
+     * @param device the QIODevice to write to
+     * @return true on a successful write, false otherwise
+     */
+    virtual bool writeToDevice (QIODevice &device) = 0;
 };
 
 #endif /* _BBASE_H */
+
+// vim: set et sw=4 ts=4:

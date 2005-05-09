@@ -36,79 +36,79 @@
  */
 class BString : public BBase
 {
-	public:
+    public:
 
-	/**
-	 * Construct a BString from @p dict.
-	 *
-	 * @param dict the buffer to read from
-	 * @param start the position in the buffer to start
-	 *        reading from
-	 */
-	BString (QByteArray &dict, int start = 0);
+    /**
+     * Construct a BString from @p dict.
+     *
+     * @param dict the buffer to read from
+     * @param start the position in the buffer to start
+     *        reading from
+     */
+    BString (QByteArray &dict, int start = 0);
 
-	/**
-	 * Construct a BString from @p tape.  Any changes made to
-	 * @p tape, such as its current position and data, will be
-	 * shared with the object that called this constructor.  @p tape
-	 * should already be positioned at the position to read from.
-	 * If construction was successful, @p tape will point to the
-	 * byte after the string data.  If construction was unsuccessful,
-	 * the position of the tape is undefined.
-	 *
-	 * @param tape the ByteTape to read from.
-	 */
-	BString (ByteTape &tape);
-	
-	/**
-	 * Destroys the BString, and deallocates all memory that had
-	 * been used.
-	 */
-	virtual ~BString ();
+    /**
+     * Construct a BString from @p tape.  Any changes made to
+     * @p tape, such as its current position and data, will be
+     * shared with the object that called this constructor.  @p tape
+     * should already be positioned at the position to read from.
+     * If construction was successful, @p tape will point to the
+     * byte after the string data.  If construction was unsuccessful,
+     * the position of the tape is undefined.
+     *
+     * @param tape the ByteTape to read from.
+     */
+    BString (ByteTape &tape);
+    
+    /**
+     * Destroys the BString, and deallocates all memory that had
+     * been used.
+     */
+    virtual ~BString ();
 
-	/**
-	 * Returns a QString representation of the data in the
-	 * BString.  It is the responsibility of the caller to ensure
-	 * that the data is convertible to a QString.  More specifically,
-	 * the data should not contain any embedded NULLs.
-	 *
-	 * @return QString containing the data from this BString.
-	 */
-	QString get_string() const { return QString(m_data); }
+    /**
+     * Returns a QString representation of the data in the
+     * BString.  It is the responsibility of the caller to ensure
+     * that the data is convertible to a QString.  More specifically,
+     * the data should not contain any embedded NULLs.
+     *
+     * @return QString containing the data from this BString.
+     */
+    QString get_string() const { return QString(m_data); }
 
-	/**
-	 * Returns the amount of data held by the string.  It would be
-	 * perhaps more appropriate to call this size(), since this is
-	 * a buffer, not a true text string.
-	 *
-	 * @return the size of the string, not including the NULL
-	 *         terminator.
-	 */
-	const int get_len() const { return m_data.size() - 1; }
+    /**
+     * Returns the amount of data held by the string.  It would be
+     * perhaps more appropriate to call this size(), since this is
+     * a buffer, not a true text string.
+     *
+     * @return the size of the string, not including the NULL
+     *         terminator.
+     */
+    const int get_len() const { return m_data.size() - 1; }
 
-	/**
-	 * Returns the type of this class.
-	 *
-	 * @return bString.  This value is only returned by this class.
-	 */
-	virtual classID type_id() const { return bString; }
+    /**
+     * Returns the type of this class.
+     *
+     * @return bString.  This value is only returned by this class.
+     */
+    virtual classID type_id() const { return bString; }
 
-	/**
-	 * This function should be called to determine whether the
-	 * string was successfully created, since no exceptions
-	 * are thrown.
-	 *
-	 * @return true if this is a valid string, false otherwise
-	 */
-	virtual bool isValid() const { return m_valid; }
+    /**
+     * This function should be called to determine whether the
+     * string was successfully created, since no exceptions
+     * are thrown.
+     *
+     * @return true if this is a valid string, false otherwise
+     */
+    virtual bool isValid() const { return m_valid; }
 
-	/**
-	 * Outputs the b-encoded representation of the object to the given
-	 * QIODevice.
-	 * @param device the QIODevice to write to
-	 * @return true on a successful write, false otherwise
-	 */
-	virtual bool writeToDevice (QIODevice &device);
+    /**
+     * Outputs the b-encoded representation of the object to the given
+     * QIODevice.
+     * @param device the QIODevice to write to
+     * @return true on a successful write, false otherwise
+     */
+    virtual bool writeToDevice (QIODevice &device);
     
     /**
      * Changes the value of the string to the given QString.
@@ -118,19 +118,21 @@ class BString : public BBase
      *         false otherwise.
      */
     bool setValue (const QString &str);
-	
+    
     private:
 
-	/**
-	 * This function handles the actual initialization of the object upon
-	 * construction, and set the m_valid flag if successful.
-	 *
-	 * @param tape the ByteTape to read from
-	 */
-	void init (ByteTape &tape);
+    /**
+     * This function handles the actual initialization of the object upon
+     * construction, and set the m_valid flag if successful.
+     *
+     * @param tape the ByteTape to read from
+     */
+    void init (ByteTape &tape);
 
-	QByteArray m_data;
-	bool m_valid;
+    QByteArray m_data;
+    bool m_valid;
 };
 
 #endif /* _BSTRING_H */
+
+// vim: set et ts=4 sw=4:

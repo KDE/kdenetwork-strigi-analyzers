@@ -352,21 +352,16 @@ bool KTorrentPlugin::writeInfo(const KFileMetaInfo &info) const
     
     for (; it != list.end(); ++it)
     {
-        kdDebug(7034) << "Group: " << *it << endl;
-        
         QStringList list2 = info[*it].keys();
         QStringList::Iterator it2 = list2.begin();
         
         for (; it2 != list2.end(); ++it2)
         {
-            kdDebug(7034) << "\tKey: " << *it2 << endl;
             QString key = *it2;
             
             if (info[*it][key].isModified())
             {
                 // Re-enter the entry in the dictionary.
-                kdDebug(7034) << "\t\tIs Modified." << endl;
-                
                 if (key == "comment")
                 {
                     BString *b_str = m_dict->findStr("comment");

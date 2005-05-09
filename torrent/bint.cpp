@@ -18,6 +18,8 @@
  */
 #include <qstring.h>
 #include <qcstring.h>
+#include <qiodevice.h>
+
 #include "bytetape.h"
 #include "bint.h"
 

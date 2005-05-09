@@ -16,22 +16,25 @@
  * If not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-#include <kdebug.h>
 #include <qcstring.h>
+#include <qiodevice.h>
+
+#include <kdebug.h>
+
 #include "bstring.h"
 #include "bytetape.h"
 
 BString::BString (QByteArray &dict, int start) :
-	m_data(), m_valid(false)
+    m_data(), m_valid(false)
 {
-	ByteTape tape (dict, start);
-	init (tape);
+    ByteTape tape (dict, start);
+    init (tape);
 }
 
 BString::BString (ByteTape &tape)
-	: m_data(), m_valid(false)
+    : m_data(), m_valid(false)
 {
-	init (tape);
+    init (tape);
 }
 
 // The reason we don't store stuff in a QString is because BitTorrent
@@ -39,68 +42,57 @@ BString::BString (ByteTape &tape)
 // a BString more of a buffer than a true string.
 void BString::init (ByteTape &tape)
 {
-	QByteArray &dict(tape.data());
+    QByteArray &dict(tape.data());
 
-	kdDebug(7034) << "1. Tape at position "  << tape.pos() << endl;
+    if (dict.find(':', tape.pos()) == -1)
+    {
+        kdDebug(7034) << "Can't find : for string!" << endl;
+        return;
+    }
 
-	if (dict.find(':', tape.pos()) == -1)
-	{
-		kdDebug(7034) << "Can't find : for string!" << endl;
-		return;
-	}
+    // Copy the part from start to :, as it will be a number
+    // That number is the number of characters to read
+    int length = dict.find(':', tape.pos()) - tape.pos();
+    char *ptr = dict.data();
 
-	// Copy the part from start to :, as it will be a number
-	// That number is the number of characters to read
-	int length = dict.find(':', tape.pos()) - tape.pos();
-	kdDebug(7034) << "String digit length is apparently " << length << endl;
-	char *ptr = dict.data();
-
-	kdDebug(7034) << "2. Tape at position " << tape.pos() << endl;
-	ptr += tape.pos();
+    ptr += tape.pos();
 
     QByteArray buffer (length + 1);
     qmemmove (buffer.data(), ptr, length);
-	buffer[length] = 0;
+    buffer[length] = 0;
 
-	kdDebug(7034) << "Read " << buffer.data() << " into buffer." << endl;
+    QString numberString (buffer);
+    bool a_isValid;
+    ulong len = numberString.toULong (&a_isValid);
 
-	QString numberString (buffer);
-	bool a_isValid;
-	ulong len = numberString.toULong (&a_isValid);
-
-	if (!a_isValid)
-	{
-		kdDebug(7034) << "Invalid string length!" << endl;
-		return;
-	}
-	else
-		kdDebug(7034) << "String length is apparently " << len << endl;
-
-	// Now that we have the length, we need to advance the tape
-	// past the colon
-	kdDebug(7034) << "Trying to move tape " << length << " spaces." << endl;
-	tape += length; // Move to colon
-	kdDebug(7034) << "3. Tape is at " << tape.pos() << endl;
-	if (*tape != ':')
-	{
-		// Sanity check
-		kdDebug(7034) << "SANITY CHECK FAILED. *tape != ':'!" << endl;
+    if (!a_isValid)
+    {
+        kdDebug(7034) << "Invalid string length!" << endl;
         return;
-	}
+    }
 
-	tape++; // Move past colon
+    // Now that we have the length, we need to advance the tape
+    // past the colon
+    tape += length; // Move to colon
+    if (*tape != ':')
+    {
+        // Sanity check
+        kdError(7034) << "SANITY CHECK FAILED. *tape != ':'!" << endl;
+        return;
+    }
 
-	// Time to copy the data
-	char *textBuffer = tape.at(tape.pos());
-	if (!m_data.resize(len + 1))
-		return;
+    tape++; // Move past colon
+
+    // Time to copy the data
+    char *textBuffer = tape.at(tape.pos());
+    if (!m_data.resize(len + 1))
+        return;
 
     qmemmove (m_data.data(), textBuffer, len);
-	m_data[len] = 0; // Null terminate for convienience
+    m_data[len] = 0; // Null terminate for convienience
 
-	tape += len;
-	kdDebug(7034) << "String is " << get_string() << endl;
-	m_valid = true;
+    tape += len;
+    m_valid = true;
 }
 
 BString::~BString ()
@@ -152,3 +144,5 @@ bool BString::setValue (const QString &str)
 
     return true;
 }
+
+// vim: set et ts=4 sw=4:
