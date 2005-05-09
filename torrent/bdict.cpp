@@ -187,32 +187,16 @@ bool BDict::writeToDevice(QIODevice &device)
     QStringList::Iterator key_iter;
     for (key_iter = key_list.begin(); key_iter != key_list.end(); ++key_iter)
     {
-        QString str = QString("%1:").
-            arg ((*key_iter).length());
+        QCString utfString = (*key_iter).utf8();
+        QString str = QString("%1:").arg(utfString.size() - 1);
+
+        QCString lenString = str.utf8();
 
         // Write out length of key
-        written = 0;
-        written = device.writeBlock (str.latin1(), str.length());
-        while ((uint) written < str.length())
-        {
-            if (written < 0 || result < 0)
-                return false;
-
-            result = device.writeBlock(str.latin1() + written, str.length() - written);
-            written += result;
-        }
+        device.writeBlock(lenString.data(), lenString.size() - 1);
 
         // Write out actual key
-        str = *key_iter;
-        written = device.writeBlock (str.latin1(), str.length());
-        while ((uint) written < str.length())
-        {
-            if (written < 0 || result < 0)
-                return false;
-
-            result = device.writeBlock(str.latin1() + written, str.length() - written);
-            written += result;
-        }
+        device.writeBlock(utfString.data(), utfString.size() - 1);
 
         // Write out the key's data
         BBase *base = m_map.find(*key_iter);

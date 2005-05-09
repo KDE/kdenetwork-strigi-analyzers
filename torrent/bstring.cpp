@@ -107,31 +107,13 @@ bool BString::writeToDevice(QIODevice &device)
     QString str = QString("%1:").
         arg(get_len());
 
-    kdDebug(7034) << "Writing string " << str << endl;
-    Q_LONG written = 0, result = 0;
+    QCString utfString = str.utf8();
 
-    written = device.writeBlock (str.latin1(), str.length());
-    while ((uint) written < str.length())
-    {
-        if (written < 0 || result < 0)
-            return false;
-
-        result = device.writeBlock (str.latin1() + written,
-            str.length() - written);
-        written += result;
-    }
+    /* Don't write null terminator */
+    device.writeBlock (utfString.data(), utfString.size() - 1);
 
     // Output the actual data
-    written = device.writeBlock (m_data.data(), m_data.count() - 1);
-    while ((uint) written < m_data.count() - 1)
-    {
-        if (written < 0 || result < 0)
-            return false;
-
-        result = device.writeBlock (m_data.data() + written,
-            m_data.count() - written - 1);
-        written += result;
-    }
+    device.writeBlock (m_data.data(), m_data.size() - 1);
 
     // Done
     return true;
@@ -139,9 +121,7 @@ bool BString::writeToDevice(QIODevice &device)
 
 bool BString::setValue (const QString &str)
 {
-    m_data.resize (str.length() + 1);
-    qstrcpy (m_data.data(), str.latin1());
-
+    m_data = str.utf8();
     return true;
 }
 

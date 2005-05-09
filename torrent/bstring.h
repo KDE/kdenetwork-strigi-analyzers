@@ -74,7 +74,7 @@ class BString : public BBase
      *
      * @return QString containing the data from this BString.
      */
-    QString get_string() const { return QString(m_data); }
+    QString get_string() const { return QString::fromUtf8(m_data.data()); }
 
     /**
      * Returns the amount of data held by the string.  It would be
