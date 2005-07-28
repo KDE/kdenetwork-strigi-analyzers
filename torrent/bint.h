@@ -19,7 +19,7 @@
 #ifndef _BINT_H
 #define _BINT_H
 
-#include <qcstring.h>
+#include <q3cstring.h>
 #include "bbase.h"
 #include "bytetape.h"
 
@@ -66,7 +66,7 @@ class BInt : public BBase
      *
      * @return this object's integer value
      */
-    Q_LLONG get_value () const { return m_value; }
+    qlonglong get_value () const { return m_value; }
 
     /**
      * Returns the type of this class.
@@ -102,7 +102,7 @@ class BInt : public BBase
      */
     void init(ByteTape &tape);
 
-    Q_LLONG m_value;
+    qlonglong m_value;
     bool m_valid;
 };
 

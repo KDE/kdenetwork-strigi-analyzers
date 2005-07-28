@@ -16,7 +16,7 @@
  * If not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <qiodevice.h>
 
 #include <kdebug.h>
@@ -107,7 +107,7 @@ bool BString::writeToDevice(QIODevice &device)
     QString str = QString("%1:").
         arg(get_len());
 
-    QCString utfString = str.utf8();
+    Q3CString utfString = str.utf8();
 
     /* Don't write null terminator */
     device.writeBlock (utfString.data(), utfString.size() - 1);

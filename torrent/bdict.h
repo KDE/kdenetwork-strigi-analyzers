@@ -19,14 +19,14 @@
 #ifndef _BDICT_H
 #define _BDICT_H
 
-#include <qdict.h>
-#include <qcstring.h> // QByteArray
+#include <q3dict.h>
+#include <q3cstring.h> // QByteArray
 #include "bytetape.h"
 #include "bbase.h"
 
 // Some useful typedefs
-typedef QDict<BBase> BBaseHash;
-typedef QDictIterator<BBase> BBaseHashIterator;
+typedef Q3Dict<BBase> BBaseHash;
+typedef Q3DictIterator<BBase> BBaseHashIterator;
 
 // Forward declarations
 class BInt;

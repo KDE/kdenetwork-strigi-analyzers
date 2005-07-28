@@ -19,13 +19,13 @@
 #ifndef _BLIST_H
 #define _BLIST_H
 
-#include <qvaluelist.h>
-#include <qcstring.h>
+#include <q3valuelist.h>
+#include <q3cstring.h>
 #include "bbase.h"
 #include "bytetape.h"
 
-typedef QValueList<BBase *> BBaseVector;
-typedef QValueList<BBase *>::iterator BBaseVectorIterator;
+typedef Q3ValueList<BBase *> BBaseVector;
+typedef Q3ValueList<BBase *>::iterator BBaseVectorIterator;
 
 // Predeclare the following classes
 class BDict;

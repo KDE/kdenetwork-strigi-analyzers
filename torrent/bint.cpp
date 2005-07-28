@@ -17,7 +17,7 @@
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 #include <qstring.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <qiodevice.h>
 
 #include "bytetape.h"

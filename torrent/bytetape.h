@@ -21,7 +21,7 @@
 
 #include <ksharedptr.h>
 
-#include <qcstring.h>
+#include <q3cstring.h>
 
 class ByteTapeShared : public KShared
 {

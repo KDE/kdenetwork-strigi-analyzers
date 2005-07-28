@@ -20,7 +20,7 @@
 #define _BSTRING_H
 
 #include <qstring.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 
 #include "bytetape.h"
 #include "bbase.h"

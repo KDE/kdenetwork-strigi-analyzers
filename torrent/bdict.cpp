@@ -18,6 +18,8 @@
  */
 #include <qstringlist.h>
 #include <qiodevice.h>
+//Added by qt3to4:
+#include <Q3CString>
 
 #include <kdebug.h>
 
@@ -187,10 +189,10 @@ bool BDict::writeToDevice(QIODevice &device)
     QStringList::Iterator key_iter;
     for (key_iter = key_list.begin(); key_iter != key_list.end(); ++key_iter)
     {
-        QCString utfString = (*key_iter).utf8();
+        Q3CString utfString = (*key_iter).utf8();
         QString str = QString("%1:").arg(utfString.size() - 1);
 
-        QCString lenString = str.utf8();
+        Q3CString lenString = str.utf8();
 
         // Write out length of key
         device.writeBlock(lenString.data(), lenString.size() - 1);

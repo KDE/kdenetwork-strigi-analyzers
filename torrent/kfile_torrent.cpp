@@ -35,7 +35,7 @@ typedef KGenericFactory<KTorrentPlugin> TorrentFactory;
 K_EXPORT_COMPONENT_FACTORY(kfile_torrent, TorrentFactory("kfile_torrent"))
 
 QStringList filesList (BList *list);
-Q_ULLONG filesLength (BList *list);
+qulonglong filesLength (BList *list);
 
 KTorrentPlugin::KTorrentPlugin (QObject *parent, const char *name,
                                 const QStringList &args)
@@ -130,7 +130,7 @@ bool KTorrentPlugin::readInfo (KFileMetaInfo &info, unsigned int)
     }
     
     QFile file (info.path());
-    if (!file.open(IO_ReadOnly))
+    if (!file.open(QIODevice::ReadOnly))
     {
         kdError() << "Unable to open given file!\n";
         return false;
@@ -193,7 +193,7 @@ bool KTorrentPlugin::readInfo (KFileMetaInfo &info, unsigned int)
     // it.
     BDict *info_dict = m_dict->findDict("info");
     int num_files = 1;
-    Q_ULLONG length = 0;
+    qulonglong length = 0;
     
     if (!info_dict)
         return false;
@@ -315,9 +315,9 @@ QStringList filesList (BList *list)
 /* This function determines the total length of a torrent stream.
  * The list provided should be the same one provided for filesList.
  */
-Q_ULLONG filesLength (BList *list)
+qulonglong filesLength (BList *list)
 {
-    Q_ULLONG length = 0;
+    qulonglong length = 0;
 
     for (unsigned int i = 0; i < list->count(); ++i)
     {
@@ -393,7 +393,7 @@ bool KTorrentPlugin::writeInfo(const KFileMetaInfo &info) const
         
     QFile output (info.path());
     
-    if (!output.open(IO_WriteOnly | IO_Truncate))
+    if (!output.open(QIODevice::WriteOnly | QIODevice::Truncate))
         return false;
     
     return m_dict->writeToDevice(output);
