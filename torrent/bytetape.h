@@ -157,7 +157,7 @@ class ByteTape
      * @return 0 if @p i is out of range, else the address of memory
      *         at that index
      */
-    char *at(const unsigned int i);
+    char *at(const int i);
 
     /**
      * Returns the current position of the tape head.
@@ -174,7 +174,7 @@ class ByteTape
      * @param pos the new position of the tape head
      * @return whether the set operation was successful
      */
-    bool setPos(unsigned int pos);
+    bool setPos(int pos);
 
     /**
      * Returns a reference to the QByteArray used to hold all the data.

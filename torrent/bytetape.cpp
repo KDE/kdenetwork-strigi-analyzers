@@ -71,7 +71,8 @@ char ByteTape::operator [] (const unsigned int i)
 
 char &ByteTape::operator * ()
 {
-    return m_array[m_shared->pos];
+    char tmp = m_array.at(m_shared->pos);
+    return tmp;
 }
 
 // Postfix increment
@@ -132,7 +133,7 @@ ByteTape & ByteTape::operator -- ()
     return *this;
 }
 
-bool ByteTape::setPos (unsigned int pos)
+bool ByteTape::setPos (int pos)
 {
     if (pos >= m_array.size())
     {
@@ -144,7 +145,7 @@ bool ByteTape::setPos (unsigned int pos)
     return true;
 }
 
-char* ByteTape::at (const unsigned int i)
+char* ByteTape::at (const int i)
 {
     if (i >= m_array.size())
     {

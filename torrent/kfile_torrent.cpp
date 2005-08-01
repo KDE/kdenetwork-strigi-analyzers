@@ -140,7 +140,7 @@ bool KTorrentPlugin::readInfo (KFileMetaInfo &info, unsigned int)
     QByteArray buf = file.readAll();
     file.close();
 
-    if (!buf)
+    if (!buf.isEmpty())
     {
         kdError() << "Empty file: " << info.path() << endl;
         return false;
