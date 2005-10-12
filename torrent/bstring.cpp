@@ -107,7 +107,7 @@ bool BString::writeToDevice(QIODevice &device)
     QString str = QString("%1:").
         arg(get_len());
 
-    Q3CString utfString = str.utf8();
+    Q3CString utfString = str.toUtf8();
 
     /* Don't write null terminator */
     device.writeBlock (utfString.data(), utfString.size() - 1);
@@ -121,7 +121,7 @@ bool BString::writeToDevice(QIODevice &device)
 
 bool BString::setValue (const QString &str)
 {
-    m_data = str.utf8();
+    m_data = str.toUtf8();
     return true;
 }
 
