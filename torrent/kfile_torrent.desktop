@@ -36,6 +36,7 @@ Name[ta]=பிட் டோர்ரெண்ட் தகவல்
 Name[tr]=Bit Torrent Bilgisi
 Name[uk]=Інформація про Bit Torrent
 Name[zh_CN]=BitTorrent 信息
+Name[zh_HK]=Bit Torrent 資訊
 ServiceTypes=KFilePlugin
 X-KDE-Library=kfile_torrent
 # change MimeType here! (example: inode/directory)
