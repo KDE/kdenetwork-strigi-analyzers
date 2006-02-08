@@ -46,7 +46,7 @@ void BString::init (ByteTape &tape)
 
     if (dict.find(':', tape.pos()) == -1)
     {
-        kdDebug(7034) << "Can't find : for string!" << endl;
+        kDebug(7034) << "Can't find : for string!" << endl;
         return;
     }
 
@@ -67,7 +67,7 @@ void BString::init (ByteTape &tape)
 
     if (!a_isValid)
     {
-        kdDebug(7034) << "Invalid string length!" << endl;
+        kDebug(7034) << "Invalid string length!" << endl;
         return;
     }
 
@@ -77,7 +77,7 @@ void BString::init (ByteTape &tape)
     if (*tape != ':')
     {
         // Sanity check
-        kdError(7034) << "SANITY CHECK FAILED. *tape != ':'!" << endl;
+        kError(7034) << "SANITY CHECK FAILED. *tape != ':'!" << endl;
         return;
     }
 

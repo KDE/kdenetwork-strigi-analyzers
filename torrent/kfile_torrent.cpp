@@ -44,7 +44,7 @@ KTorrentPlugin::KTorrentPlugin (QObject *parent, const char *name,
     KFileMimeTypeInfo *info = addMimeTypeInfo ("application/x-bittorrent");
     if (!info)
     {
-        kdError() << "Error creating application/x-bittorrent mime type info!\n";
+        kError() << "Error creating application/x-bittorrent mime type info!\n";
         return;
     }
 
@@ -52,7 +52,7 @@ KTorrentPlugin::KTorrentPlugin (QObject *parent, const char *name,
         addGroupInfo (info, "TorrentInfo", i18n("Torrent Information"));
     if (!group)
     {
-        kdError() << "Error creating TorrentInfo group!\n";
+        kError() << "Error creating TorrentInfo group!\n";
         return;
     }
     setAttributes (group, KFileMimeTypeInfo::Modifiable);
@@ -62,7 +62,7 @@ KTorrentPlugin::KTorrentPlugin (QObject *parent, const char *name,
     item = addItemInfo(group, "name", i18n("Name"), QVariant::String);
     if (!item)
     {
-        kdError() << "Error adding Name to group!\n";
+        kError() << "Error adding Name to group!\n";
         return;
     }
     setHint (item, KFileMimeTypeInfo::Name);
@@ -71,7 +71,7 @@ KTorrentPlugin::KTorrentPlugin (QObject *parent, const char *name,
     item = addItemInfo(group, "length", i18n("Torrent Length"), QVariant::ULongLong);
     if (!item)
     {
-        kdError() << "Error adding Length to group!\n";
+        kError() << "Error adding Length to group!\n";
         return;
     }
     setHint (item, KFileMimeTypeInfo::Length);
@@ -80,28 +80,28 @@ KTorrentPlugin::KTorrentPlugin (QObject *parent, const char *name,
     item = addItemInfo(group, "announce", i18n("Tracker URL"), QVariant::String);
     if (!item)
     {
-        kdError() << "Error adding Announce to group!\n";
+        kError() << "Error adding Announce to group!\n";
         return;
     }
     
     item = addItemInfo(group, "creation date", i18n("Date Created"), QVariant::DateTime);
     if (!item)
     {
-        kdError() << "Error adding DateCreated to group!\n";
+        kError() << "Error adding DateCreated to group!\n";
         return;
     }
     
     item = addItemInfo(group, "NumFiles", i18n("Number of Files"), QVariant::Int);
     if (!item)
     {
-        kdError() << "Error adding NumFiles to group!\n";
+        kError() << "Error adding NumFiles to group!\n";
         return;
     }
     
     item = addItemInfo(group, "piece length", i18n("File Piece Length"), QVariant::Int);
     if (!item)
     {
-        kdError() << "Error adding PieceLength to group!\n";
+        kError() << "Error adding PieceLength to group!\n";
         return;
     }
     setUnit (item, KFileMimeTypeInfo::Bytes);
@@ -109,7 +109,7 @@ KTorrentPlugin::KTorrentPlugin (QObject *parent, const char *name,
     item = addItemInfo(group, "comment", i18n("Comment"), QVariant::String);
     if (!item)
     {
-        kdError() << "Error adding Comment to group!\n";
+        kError() << "Error adding Comment to group!\n";
         return;
     }
     setAttributes (item, KFileMimeTypeInfo::MultiLine | KFileMimeTypeInfo::Modifiable);
@@ -124,15 +124,15 @@ bool KTorrentPlugin::readInfo (KFileMetaInfo &info, unsigned int)
      */
     if (m_failed)
     {
-        kdError() << "Construction of KTorrentPlugin failed for " << info.path() << endl;
-        kdError() << "Aborting meta-info read.\n";
+        kError() << "Construction of KTorrentPlugin failed for " << info.path() << endl;
+        kError() << "Aborting meta-info read.\n";
         return false;
     }
     
     QFile file (info.path());
     if (!file.open(QIODevice::ReadOnly))
     {
-        kdError() << "Unable to open given file!\n";
+        kError() << "Unable to open given file!\n";
         return false;
     }
 
@@ -142,7 +142,7 @@ bool KTorrentPlugin::readInfo (KFileMetaInfo &info, unsigned int)
 
     if (!buf.isEmpty())
     {
-        kdError() << "Empty file: " << info.path() << endl;
+        kError() << "Empty file: " << info.path() << endl;
         return false;
     }
 
@@ -150,13 +150,13 @@ bool KTorrentPlugin::readInfo (KFileMetaInfo &info, unsigned int)
     
     if (!m_dict)
     {
-        kdError() << "Error creating dictionary from open file: " << info.path() << endl;
+        kError() << "Error creating dictionary from open file: " << info.path() << endl;
         return false;
     }
 
     if (!m_dict->isValid())
     {
-        kdDebug(7034) << "Invalid torrent file: " << info.path() << endl;
+        kDebug(7034) << "Invalid torrent file: " << info.path() << endl;
         return false;
     }
     

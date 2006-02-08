@@ -37,7 +37,7 @@ ByteTape& ByteTape::operator += (const unsigned int i)
     m_shared->pos += i;
     if (m_array.size() <= m_shared->pos)
     {
-        kdDebug(7034) << "Whoops.  Advanced too far." << endl;
+        kDebug(7034) << "Whoops.  Advanced too far." << endl;
         m_shared->pos = m_array.size() - 1;
     }
     
@@ -48,7 +48,7 @@ ByteTape& ByteTape::operator -= (const unsigned int i)
 {
     if (i > m_shared->pos)
     {
-        kdDebug(7034) << "Whoops, tried to back up too far." << endl;
+        kDebug(7034) << "Whoops, tried to back up too far." << endl;
         m_shared->pos = 0;
     }
     else
@@ -63,7 +63,7 @@ char ByteTape::operator [] (const unsigned int i)
         return m_array[i];
     else
     {
-        kdWarning() << "Can't dereference tape at " << i
+        kWarning() << "Can't dereference tape at " << i
                     << ", size is " << m_array.size() << endl;
         return 0;
     }
@@ -86,8 +86,8 @@ ByteTape ByteTape::operator ++ (int)
     if (m_shared->pos >= m_array.size())
     {
         m_shared->pos = m_array.size() - 1;
-        kdDebug(7034) << "Tape already at end!" << endl;
-        kdDebug(7034) << "Tape size is " << m_array.size() << endl;
+        kDebug(7034) << "Tape already at end!" << endl;
+        kDebug(7034) << "Tape size is " << m_array.size() << endl;
     }
     
     return temp;
@@ -100,8 +100,8 @@ ByteTape & ByteTape::operator ++()
     if (m_shared->pos >= m_array.size())
     {
         m_shared->pos = m_array.size() - 1;
-        kdDebug(7034) << "Tape already at end!" << endl;
-        kdDebug(7034) << "Tape size is " << m_array.size() << endl;
+        kDebug(7034) << "Tape already at end!" << endl;
+        kDebug(7034) << "Tape size is " << m_array.size() << endl;
     }
     
     return *this;
@@ -117,7 +117,7 @@ ByteTape ByteTape::operator -- (int)
     if (m_shared->pos != 0)
         m_shared->pos --;
     else
-        kdDebug(7034) << "Tape already at beginning!" << endl;
+        kDebug(7034) << "Tape already at beginning!" << endl;
     
     return temp;
 }
@@ -128,7 +128,7 @@ ByteTape & ByteTape::operator -- ()
     if (m_shared->pos != 0)
         m_shared->pos --;
     else
-        kdDebug(7034) << "Tape already at beginning!" << endl;
+        kDebug(7034) << "Tape already at beginning!" << endl;
     
     return *this;
 }
@@ -137,7 +137,7 @@ bool ByteTape::setPos (int pos)
 {
     if (pos >= m_array.size())
     {
-        kdDebug(7034) << "Can't set tape to " << pos << endl;
+        kDebug(7034) << "Can't set tape to " << pos << endl;
         return false;
     }
 
@@ -149,7 +149,7 @@ char* ByteTape::at (const int i)
 {
     if (i >= m_array.size())
     {
-        kdDebug(7034) << "Access to tape at " << i << " out-of-range." << endl;
+        kDebug(7034) << "Access to tape at " << i << " out-of-range." << endl;
         return 0;
     }
         
