@@ -2,6 +2,7 @@
 Encoding=UTF-8
 Type=Service
 Name=Bit Torrent Info
+Name[fr]=Infos Bit Torrent
 Name[x-test]=xxBit Torrent Infoxx
 ServiceTypes=KFilePlugin
 X-KDE-Library=kfile_torrent
