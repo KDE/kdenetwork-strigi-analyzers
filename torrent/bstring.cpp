@@ -58,7 +58,7 @@ void BString::init (ByteTape &tape)
     ptr += tape.pos();
 
     QByteArray buffer (length + 1);
-    qmemmove (buffer.data(), ptr, length);
+    memmove (buffer.data(), ptr, length);
     buffer[length] = 0;
 
     QString numberString (buffer);
@@ -85,11 +85,10 @@ void BString::init (ByteTape &tape)
 
     // Time to copy the data
     char *textBuffer = tape.at(tape.pos());
-    if (!m_data.resize(len + 1))
-        return;
+    m_data.resize(len + 1);
 
-    qmemmove (m_data.data(), textBuffer, len);
-    m_data[len] = 0; // Null terminate for convienience
+    memmove (m_data.data(), textBuffer, len);
+    m_data.data()[len] = 0; // Null terminate for convienience
 
     tape += len;
     m_valid = true;
