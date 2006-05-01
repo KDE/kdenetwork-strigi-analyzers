@@ -18,5 +18,3 @@ METASOURCES = AUTO
 services_DATA = kfile_torrent.desktop
 servicesdir = $(kde_servicesdir)
 
-messages:
-	$(XGETTEXT) *.cpp -o $(podir)/kfile_torrent.pot
