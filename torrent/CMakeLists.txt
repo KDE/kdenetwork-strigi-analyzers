@@ -1,4 +1,3 @@
-kde4_header()
 
 
 
@@ -28,7 +27,6 @@ install_targets(${PLUGIN_INSTALL_DIR} kfile_torrent )
 
 install_files( ${SERVICES_INSTALL_DIR} FILES kfile_torrent.desktop )
 
-kde4_footer()
 
 
 
