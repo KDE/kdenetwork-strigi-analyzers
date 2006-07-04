@@ -20,12 +20,12 @@ kde4_install_libtool_file( ${PLUGIN_INSTALL_DIR} kfile_torrent )
 
 target_link_libraries(kfile_torrent  ${KDE4_KDECORE_LIBS} kio )
 
-install_targets(${PLUGIN_INSTALL_DIR} kfile_torrent )
+install(TARGETS kfile_torrent  DESTINATION ${PLUGIN_INSTALL_DIR})
 
 
 ########### install files ###############
 
-install_files( ${SERVICES_INSTALL_DIR} FILES kfile_torrent.desktop )
+install( FILES kfile_torrent.desktop  DESTINATION ${SERVICES_INSTALL_DIR})
 
 
 
