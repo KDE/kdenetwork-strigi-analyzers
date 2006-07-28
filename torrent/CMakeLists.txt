@@ -18,7 +18,7 @@ kde4_add_plugin(kfile_torrent ${kfile_torrent_PART_SRCS})
 
 kde4_install_libtool_file( ${PLUGIN_INSTALL_DIR} kfile_torrent )
 
-target_link_libraries(kfile_torrent  ${KDE4_KDECORE_LIBS} kio )
+target_link_libraries(kfile_torrent  ${KDE4_KIO_LIBS}  )
 
 install(TARGETS kfile_torrent  DESTINATION ${PLUGIN_INSTALL_DIR})
 
