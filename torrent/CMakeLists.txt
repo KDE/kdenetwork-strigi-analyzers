@@ -12,7 +12,7 @@ set(kfile_torrent_PART_SRCS
    bdict.cpp 
    kfile_torrent.cpp )
 
-kde4_automoc(${kfile_torrent_PART_SRCS})
+kde4_automoc(kfile_torrent ${kfile_torrent_PART_SRCS})
 
 kde4_add_plugin(kfile_torrent ${kfile_torrent_PART_SRCS})
 
