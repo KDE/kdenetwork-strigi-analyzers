@@ -32,7 +32,7 @@ ByteTape::ByteTape (const ByteTape &tape)
 {
 }
 
-ByteTape& ByteTape::operator += (const unsigned int i)
+ByteTape& ByteTape::operator += (const int i)
 {
     m_shared->pos += i;
     if (m_array.size() <= m_shared->pos)
@@ -44,7 +44,7 @@ ByteTape& ByteTape::operator += (const unsigned int i)
     return *this;
 }
 
-ByteTape& ByteTape::operator -= (const unsigned int i)
+ByteTape& ByteTape::operator -= (const int i)
 {
     if (i > m_shared->pos)
     {
@@ -57,7 +57,7 @@ ByteTape& ByteTape::operator -= (const unsigned int i)
     return *this;
 }
 
-char ByteTape::operator [] (const unsigned int i)
+char ByteTape::operator [] (const int i)
 {
     if (i < m_array.size())
         return m_array[i];

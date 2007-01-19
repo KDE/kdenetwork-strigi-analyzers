@@ -18,8 +18,7 @@
  */
 #include <qstringlist.h>
 #include <qiodevice.h>
-//Added by qt3to4:
-#include <Q3CString>
+#include <QByteArray>
 
 #include <kdebug.h>
 
@@ -163,13 +162,13 @@ bool BDict::writeToDevice(QIODevice &device)
     const char *e_str = "e";
     Q_LONG written = 0, result = 0;
 
-    written = device.writeBlock (d_str, 1);
+    written = device.write (d_str, 1);
     while (written < 1)
     {
         if (written < 0 || result < 0)
             return false;
 
-        result = device.writeBlock (d_str, 1);
+        result = device.write (d_str, 1);
         written += result;
     }
 
@@ -189,16 +188,16 @@ bool BDict::writeToDevice(QIODevice &device)
     QStringList::Iterator key_iter;
     for (key_iter = key_list.begin(); key_iter != key_list.end(); ++key_iter)
     {
-        Q3CString utfString = (*key_iter).toUtf8();
+        QByteArray utfString = (*key_iter).toUtf8();
         QString str = QString("%1:").arg(utfString.size() - 1);
 
-        Q3CString lenString = str.toUtf8();
+        QByteArray lenString = str.toUtf8();
 
         // Write out length of key
-        device.writeBlock(lenString.data(), lenString.size() - 1);
+        device.write(lenString.data(), lenString.size() - 1);
 
         // Write out actual key
-        device.writeBlock(utfString.data(), utfString.size() - 1);
+        device.write(utfString.data(), utfString.size() - 1);
 
         // Write out the key's data
         BBase *base = m_map.find(*key_iter);
@@ -206,13 +205,13 @@ bool BDict::writeToDevice(QIODevice &device)
             return false;
     }
 
-    written = device.writeBlock (e_str, 1);
+    written = device.write (e_str, 1);
     while ((uint) written < 1)
     {
         if (written < 0 || result < 0)
             return false;
 
-        result = device.writeBlock (e_str, 1);
+        result = device.write (e_str, 1);
         written += result;
     }
 

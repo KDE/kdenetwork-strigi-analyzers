@@ -17,7 +17,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 #include <qstring.h>
-#include <q3cstring.h>
 #include <qiodevice.h>
 
 #include "bytetape.h"
@@ -46,19 +45,19 @@ void BInt::init (ByteTape &tape)
     tape ++; // Move to start of digits
 
     QByteArray &dict (tape.data());
-    if (dict.find('e', tape.pos()) == -1)
+    if (dict.indexOf('e', tape.pos()) == -1)
         return;
 
     // Copy the part from the start to the e.  The values in-between
     // should be digits, perhaps preceded by a negative sign.
-    int length = dict.find('e', tape.pos()) - tape.pos();
+    int length = dict.indexOf('e', tape.pos()) - tape.pos();
     char *ptr = dict.data(); // Get start of buffer
     ptr += tape.pos(); // Advance to current position in tape
 
     // Allocate temporary data buffer
-    QByteArray buffer(length + 1);
+    QByteArray buffer(length + 1, ' ');
 
-    qmemmove (buffer.data(), ptr, length);
+    memmove (buffer.data(), ptr, length);
     buffer[length] = 0; // Null-terminate
 
     QString numberString (buffer);
@@ -87,13 +86,13 @@ bool BInt::writeToDevice (QIODevice &device)
         arg (m_value);
 
     Q_LONG written = 0, result = 0;
-    written = device.writeBlock (str.latin1(), str.length());
-    while ((uint) written < str.length())
+    written = device.write (str.toLatin1(), str.length());
+    while (written < str.length())
     {
         if (written < 0 || result < 0)
             return false;
 
-        result = device.writeBlock(str.latin1() + written,
+        result = device.write((str + written).toLatin1(),
                 str.length() - written);
         written += result;
     }

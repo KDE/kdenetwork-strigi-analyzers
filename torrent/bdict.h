@@ -20,7 +20,6 @@
 #define _BDICT_H
 
 #include <q3dict.h>
-#include <q3cstring.h> // QByteArray
 #include "bytetape.h"
 #include "bbase.h"
 

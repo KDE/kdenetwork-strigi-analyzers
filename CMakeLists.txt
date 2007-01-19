@@ -1,3 +1,1 @@
-MESSAGE(STATUS "Readd torrent")
-#add_subdirectory( torrent ) 
-
+add_subdirectory(torrent)

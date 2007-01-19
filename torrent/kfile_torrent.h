@@ -47,7 +47,7 @@ class KTorrentPlugin : public KFilePlugin
      * @param name the name of this object (not user-readable)
      * @param args unused by this class
      */
-    KTorrentPlugin (QObject *parent, const char *name, const QStringList &args);
+    KTorrentPlugin (QObject *parent, const QStringList &args);
 
     /**
      * Destructor that closes the dictionary holding the torrent information.

@@ -37,9 +37,8 @@ K_EXPORT_COMPONENT_FACTORY(kfile_torrent, TorrentFactory("kfile_torrent"))
 QStringList filesList (BList *list);
 qulonglong filesLength (BList *list);
 
-KTorrentPlugin::KTorrentPlugin (QObject *parent, const char *name,
-                                const QStringList &args)
-    : KFilePlugin (parent, name, args), m_failed(true), m_dict(0)
+KTorrentPlugin::KTorrentPlugin (QObject *parent, const QStringList &args)
+    : KFilePlugin (parent, args), m_failed(true), m_dict(0)
 {
     KFileMimeTypeInfo *info = addMimeTypeInfo ("application/x-bittorrent");
     if (!info)

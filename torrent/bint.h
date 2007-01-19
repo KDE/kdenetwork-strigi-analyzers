@@ -19,7 +19,6 @@
 #ifndef _BINT_H
 #define _BINT_H
 
-#include <q3cstring.h>
 #include "bbase.h"
 #include "bytetape.h"
 

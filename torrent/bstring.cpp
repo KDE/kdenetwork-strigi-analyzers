@@ -16,7 +16,7 @@
  * If not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-#include <q3cstring.h>
+#include <QByteArray>
 #include <qiodevice.h>
 
 #include <kdebug.h>
@@ -44,7 +44,7 @@ void BString::init (ByteTape &tape)
 {
     QByteArray &dict(tape.data());
 
-    if (dict.find(':', tape.pos()) == -1)
+    if (dict.indexOf(':', tape.pos()) == -1)
     {
         kDebug(7034) << "Can't find : for string!" << endl;
         return;
@@ -52,12 +52,12 @@ void BString::init (ByteTape &tape)
 
     // Copy the part from start to :, as it will be a number
     // That number is the number of characters to read
-    int length = dict.find(':', tape.pos()) - tape.pos();
+    int length = dict.indexOf(':', tape.pos()) - tape.pos();
     char *ptr = dict.data();
 
     ptr += tape.pos();
 
-    QByteArray buffer (length + 1);
+    QByteArray buffer (length + 1, ' ');
     memmove (buffer.data(), ptr, length);
     buffer[length] = 0;
 
@@ -106,13 +106,13 @@ bool BString::writeToDevice(QIODevice &device)
     QString str = QString("%1:").
         arg(get_len());
 
-    Q3CString utfString = str.toUtf8();
+    QByteArray utfString = str.toUtf8();
 
     /* Don't write null terminator */
-    device.writeBlock (utfString.data(), utfString.size() - 1);
+    device.write (utfString.data(), utfString.size() - 1);
 
     // Output the actual data
-    device.writeBlock (m_data.data(), m_data.size() - 1);
+    device.write (m_data.data(), m_data.size() - 1);
 
     // Done
     return true;

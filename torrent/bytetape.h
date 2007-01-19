@@ -21,13 +21,11 @@
 
 #include <ksharedptr.h>
 
-#include <q3cstring.h>
-
 class ByteTapeShared : public KShared
 {
     public:
 
-    unsigned int pos;
+    int pos;
 };
 
 /**
@@ -73,7 +71,7 @@ class ByteTape
      * @param i the amount to increment the current position by
      * @return t reference to the object incremented
      */
-    ByteTape & operator += (const unsigned int i);
+    ByteTape & operator += (const int i);
 
     /**
      * Decrements the current position by @p i.  It is the responsibility
@@ -85,7 +83,7 @@ class ByteTape
      * @param i the amount to decrement the current position by
      * @return a reference to the object decremented
      */
-    ByteTape & operator -= (const unsigned int i);
+    ByteTape & operator -= (const int i);
 
     /**
      * Increments the current position by 1.  This is a postfix
@@ -138,7 +136,7 @@ class ByteTape
      * @return the byte at the given index.  0 may be returned on error,
      *         but does not necessarily indicate an error.
      */
-    char operator [] (const unsigned int i);
+    char operator [] (const int i);
 
     /**
      * Returns the byte at the tape's current position.  You can assign
@@ -164,7 +162,7 @@ class ByteTape
      *
      * @return the tape head's current position
      */
-    unsigned int pos() const { return m_shared->pos; }
+    int pos() const { return m_shared->pos; }
 
     /**
      * Sets the current position of the tape head to @p pos.  If the

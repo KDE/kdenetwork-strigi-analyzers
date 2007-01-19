@@ -145,13 +145,13 @@ bool BList::writeToDevice(QIODevice &device)
     const char *e_str = "e";
     Q_LONG written = 0, result = 0;
     
-    written = device.writeBlock (l_str, 1);
+    written = device.write (l_str, 1);
     while (written < 1)
     {
         if (written < 0 || result < 0)
             return false;
             
-        result = device.writeBlock (l_str, 1);
+        result = device.write (l_str, 1);
         written += result;
     }
     
@@ -162,13 +162,13 @@ bool BList::writeToDevice(QIODevice &device)
             return false;
     }
     
-    written = device.writeBlock (e_str, 1);
+    written = device.write (e_str, 1);
     while (written < 1)
     {
         if (written < 0 || result < 0)
             return false;
             
-        result = device.writeBlock (e_str, 1);
+        result = device.write (e_str, 1);
         written += result;
     }
     
