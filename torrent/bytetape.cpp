@@ -69,10 +69,9 @@ char ByteTape::operator [] (const int i)
     }
 }
 
-char &ByteTape::operator * ()
+char& ByteTape::operator * ()
 {
-    char tmp = m_array.at(m_shared->pos);
-    return tmp;
+    return m_array.data()[m_shared->pos];
 }
 
 // Postfix increment
