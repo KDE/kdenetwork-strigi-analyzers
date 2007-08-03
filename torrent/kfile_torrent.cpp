@@ -155,7 +155,7 @@ bool KTorrentPlugin::readInfo (KFileMetaInfo &info, unsigned int)
 
     if (!m_dict->isValid())
     {
-        kDebug(7034) << "Invalid torrent file: " << info.path() << endl;
+        kDebug(7034) << "Invalid torrent file: " << info.path();
         return false;
     }
     

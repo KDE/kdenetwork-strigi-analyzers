@@ -46,7 +46,7 @@ void BString::init (ByteTape &tape)
 
     if (dict.indexOf(':', tape.pos()) == -1)
     {
-        kDebug(7034) << "Can't find : for string!" << endl;
+        kDebug(7034) << "Can't find : for string!";
         return;
     }
 
@@ -67,7 +67,7 @@ void BString::init (ByteTape &tape)
 
     if (!a_isValid)
     {
-        kDebug(7034) << "Invalid string length!" << endl;
+        kDebug(7034) << "Invalid string length!";
         return;
     }
 
