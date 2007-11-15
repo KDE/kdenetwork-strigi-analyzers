@@ -1,5 +1,4 @@
 [Desktop Entry]
-Encoding=UTF-8
 Type=Service
 Name=Bit Torrent Info
 Name[br]=Titouriñ diwar-benn Bit Torrent
@@ -47,7 +46,7 @@ Name[x-test]=xxBit Torrent Infoxx
 Name[zh_CN]=BitTorrent 信息
 Name[zh_HK]=Bit Torrent 資訊
 Name[zh_TW]=Bit Torrent 資訊
-ServiceTypes=KFilePlugin
+X-KDE-ServiceTypes=KFilePlugin
 X-KDE-Library=kfile_torrent
 # change MimeType here! (example: inode/directory)
 MimeType=application/x-bittorrent;
