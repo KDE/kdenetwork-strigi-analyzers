@@ -1,6 +1,7 @@
 [Desktop Entry]
 Type=Service
 Name=Bit Torrent Info
+Name[bn]=বিট টোরেন্ট তথ্য
 Name[br]=Titouriñ diwar-benn Bit Torrent
 Name[ca]=Informació de Bit Torrent
 Name[cs]=Bit Torrent informace
@@ -36,6 +37,7 @@ Name[pt]=Informações do Bit Torrent
 Name[pt_BR]=Informações do Bit Torrent
 Name[ro]=Informaţii Bit Torrent
 Name[ru]=Сведения о BitTorrent
+Name[sk]=Bit Torrent informácie
 Name[sl]=Podatki o BitTorrentu
 Name[sr]=Bit Torrent информације
 Name[sr@latin]=Bit Torrent informacije
