@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004 Michael Pyne <michael.pyne@kdemail.net>
+ * Copyright © 2003, 2004, 2009 Michael Pyne <michael.pyne@kdemail.net>
  *
  * This software is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -16,59 +16,43 @@
  * If not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-#ifndef _BLIST_H
-#define _BLIST_H
+#ifndef TORRENT_ANALYZER_LIST_H
+#define TORRENT_ANALYZER_LIST_H
 
-#include <QList>
+#include <QtCore/QList>
 
 #include "bbase.h"
-#include "bytetape.h"
 
-typedef QList<BBase *> BBaseVector;
-typedef QList<BBase *>::iterator BBaseVectorIterator;
+class ByteStream;
 
-// Predeclare the following classes
-class BDict;
-class BString;
-class BInt;
+typedef QList<BBase::Ptr> BBaseVector;
+typedef QListIterator<BBase::Ptr> BBaseVectorIterator;
 
 /**
  * Class to construct a list of BBase objects from a b-encoded
  * list.
  *
- * @author Michael Pyne <mpyne@grammarian.homelinux.net>
+ * @author Michael Pyne <michael.pyne@kdemail.net>
  * @see BBase
  */
 class BList : public BBase
 {
-    public:
-    
-    /**
-     * Construct a BList from @p dict.
-     *
-     * @param dict the buffer to read from
-     * @param start the position in the buffer to start
-     *        reading from
-     */
-    BList (QByteArray &dict, unsigned int start = 0);
+public:
+    typedef boost::shared_ptr<BList> Ptr;
 
     /**
-     * Construct a BList from @p tape.  Any changes made to
-     * @p tape, such as its current position and data, will be
-     * shared with the object that called this constructor.  @p tape
+     * Construct a BList from @p stream.  Any changes made to
+     * @p stream, such as its current position and data, will be
+     * shared with the object that called this constructor.  @p stream
      * should already be positioned at the position to read from.
-     * If construction was successful, @p tape will point to the
-     * byte after the list data.  If construction was unsuccessful,
-     * the position of the tape is undefined.
+     * If construction was successful, @p stream will point to the
+     * byte after the list data.  An exception is thrown if errors are
+     * encountered while constructing.
      *
-     * @param tape the ByteTape to read from.
+     * @param stream the ByteStream to read from.
      */
-    BList (ByteTape &tape);
-    
-    /**
-     * Destroys the list, and deletes all of the items that had
-     * been contained within.
-     */
+    BList (ByteStream &stream);
+
     virtual ~BList ();
 
     /**
@@ -82,97 +66,45 @@ class BList : public BBase
      * Returns the number of items contained within the list.
      *
      * @return number of items in the list
-     */ 
-    virtual unsigned int count() const { return m_array.count(); }
-
-    /**
-     * This function should be called to determine whether the
-     * list was successfully created, since no exceptions
-     * are thrown.
-     *
-     * @return true if this is a valid list, false otherwise
      */
-    virtual bool isValid() const { return m_valid; }
-    
+    virtual unsigned int count() const;
+
     /**
      * This function returns a pointer to the appropriate
      * item in the list.
-     * 
+     *
      * @param i index of the item to return
-     * @return pointer to the appropriate BBase, or 0 if
-     *         the index is out-of-bounds
+     * @return pointer to the appropriate BBase.  An exception
+     *         is raised if the index is out of bounds.
      */
-    inline BBase * index (unsigned int i);
-    
+    BBase::Ptr index (unsigned int i) const;
+
     /**
-     * Convience function to return a pointer to the appropriate
-     * item in the list, already casted.
+     * Convenience function to return a pointer to the appropriate
+     * item in the list, already casted to the appropriate type.
      *
      * @param i index of the item to return
      * @return pointer to the appropriate BBase, downcasted to
-     *         BList.  If the element is <b>not</b> a BList, 0
-     *         will be returned instead, even if it was a valid
-     *         BBase.
+     *         the given type.  If the element is not the given
+     *         type a null pointer is returned.  If the index is
+     *         out-of-range, an exception will be raised.
      */
-    BList *   indexList (unsigned int i);
-    
+    template<class T>
+    boost::shared_ptr<T> indexType(unsigned int i) const
+    {
+        return boost::dynamic_pointer_cast<T>(index(i));
+    }
+
     /**
-     * Convience function to return a pointer to the appropriate
-     * item in the list, already casted.
-     *
-     * @param i index of the item to return
-     * @return pointer to the appropriate BBase, downcasted to
-     *         BInt.  If the element is <b>not</b> a BInt, 0
-     *         will be returned instead, even if it was a valid
-     *         BBase.
-     */
-    BInt *    indexInt (unsigned int i);  
-    
-    /**
-     * Convience function to return a pointer to the appropriate
-     * item in the list, already casted.
-     *
-     * @param i index of the item to return
-     * @return pointer to the appropriate BBase, downcasted to
-     *         BDict.  If the element is <b>not</b> a BDict, 0
-     *         will be returned instead, even if it was a valid
-     *         BBase.
-     */
-    BDict *   indexDict (unsigned int i);
-    
-    /**
-     * Convience function to return a pointer to the appropriate
-     * item in the list, already casted.
-     *
-     * @param i index of the item to return
-     * @return pointer to the appropriate BBase, downcasted to
-     *         BString.  If the element is <b>not</b> a BString, 0
-     *         will be returned instead, even if it was a valid
-     *         BBase.
-     */
-    BString * indexStr (unsigned int i);
-    
-    /**
-     * Returns an iterator to the first element in the list.
+     * Returns an iterator on the list (Java-style).
      * There is no particular sorting associated with the list
      * at this time.
      *
-     * @return iterator pointing to the beginning of the list
-     * @see QValueList
+     * @return non-mutable iterator
+     * @see QListIterator
      */
-    BBaseVectorIterator begin(void) { return m_array.begin(); }
+    BBaseVectorIterator iterator() const;
 
-    /**
-     * Returns an iterator pointing one element past the end of
-     * the list.  Although this element belongs to the list,
-     * you should never dereference this iterator.  Instead, treat
-     * it as a boundary condition to avoid.
-     *
-     * @return iterator pointing one element past the end of the list
-     * @see QValueList
-     */
-    BBaseVectorIterator end(void) { return m_array.end(); }
-    
     /**
      * Outputs the b-encoded representation of the object to the given
      * QIODevice.
@@ -181,20 +113,10 @@ class BList : public BBase
      */
     virtual bool writeToDevice (QIODevice &device);
 
-    private:
-    
-    /**
-     * This function handles the actual initialization of the object upon
-     * construction, and set the m_valid flag if successful.
-     *
-     * @param tape the ByteTape to read from
-     */
-    void init(ByteTape &tape);
-
-    bool m_valid;
+private:
     BBaseVector m_array;
 };
 
-#endif /* _BLIST_H */
+#endif /* TORRENT_ANALYZER_LIST_H */
 
 // vim: set et sw=4 ts=4:

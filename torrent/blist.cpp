@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004 Michael Pyne <michael.pyne@kdemail.net>
+ * Copyright © 2003, 2004, 2009 Michael Pyne <michael.pyne@kdemail.net>
  *
  * This software is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -16,162 +16,93 @@
  * If not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-#include <qiodevice.h>
-
-#include "bytetape.h"
 #include "blist.h"
+#include "bytestream.h"
 #include "bdict.h"
 #include "bstring.h"
 #include "bint.h"
 
-BList::BList (ByteTape &tape)
-    : m_valid(false), m_array()
+#include <QtCore/QIODevice>
+
+#include <stdexcept>
+#include <string>
+
+BList::BList (ByteStream &stream)
+    : m_array()
 {
-    init (tape);
-}
+    BBase::Ptr temp;
 
-BList::BList (QByteArray &dict, unsigned int start)
-    : m_valid(false), m_array()
-{
-    ByteTape tape (dict, start);
-
-    init (tape);
-}
-
-void BList::init (ByteTape &tape)
-{
-    BBase *temp;
-
-    if (*tape != 'l')
+    if (*stream != 'l')
         return;
 
-    tape++;
-    
+    ++stream;
+
     /* Repeat circling over the string until the list is over */
-    while (*tape != 'e')
+    while (*stream != 'e')
     {
-        switch (*tape)
+        switch (*stream)
         {
             case 'd':
-                temp = new BDict (tape);
+                temp = BBase::Ptr(new BDict (stream));
             break;
 
             case 'l': /* This element is a list */
-                temp = new BList (tape);
+                temp = BBase::Ptr(new BList (stream));
             break;
 
             case 'i': /* This element is an int */
-                temp = new BInt (tape);
+                temp = BBase::Ptr(new BInt (stream));
             break;
-                
+
             default: /* Maybe a string? */
-                temp = new BString (tape);
+                temp = BBase::Ptr(new BString (stream));
         }
-        
-        if (!temp || !temp->isValid())
-            return;  // Invalid list element
+
+        if (!temp)
+            throw std::runtime_error("Error creating BList");
 
         m_array.append (temp);
     }
 
-    m_valid = true;
-
-    // Only way out is to detect 'e', so we need to increment tape past that.
-    tape++;
+    // Only way out is to detect 'e', so we need to increment stream past that.
+    ++stream;
 }
 
 BList::~BList()
 {
-    BBaseVectorIterator iter;
-
-    for (iter = begin(); iter != end(); ++iter)
-        delete *iter;
 }
 
-BBase* BList::index (unsigned int i)
+unsigned int BList::count() const
+{
+    return m_array.count();
+}
+
+BBase::Ptr BList::index (unsigned int i) const
 {
     if (i >= count())
-        return 0;
-    else
-        return m_array[i];
+        throw std::runtime_error("BList array access out of bounds");
+
+    return m_array[i];
 }
 
-BList * BList::indexList (unsigned int i)
+BBaseVectorIterator BList::iterator() const
 {
-    BBase *base = index(i);
-
-    if (base && base->type_id() == bList)
-        return dynamic_cast<BList*>(base);
-    
-    return 0;
-}
-
-BInt * BList::indexInt (unsigned int i)
-{
-    BBase *base = index(i);
-
-    if (base && base->type_id() == bInt)
-        return dynamic_cast<BInt*>(base);
-    
-    return 0;
-}
-
-BDict * BList::indexDict (unsigned int i)
-{
-    BBase *base = index(i);
-
-    if (base && base->type_id() == bDict)
-        return dynamic_cast<BDict*>(base);
-    
-    return 0;
-}
-
-BString * BList::indexStr (unsigned int i)
-{
-    BBase *base = index(i);
-
-    if (base && base->type_id() == bString)
-        return dynamic_cast<BString*>(base);
-    
-    return 0;
+    return BBaseVectorIterator(m_array);
 }
 
 bool BList::writeToDevice(QIODevice &device)
 {
-    if (!m_valid)
+    if (!device.putChar('l'))
         return false;
 
-    const char *l_str = "l";
-    const char *e_str = "e";
-    Q_LONG written = 0, result = 0;
-    
-    written = device.write (l_str, 1);
-    while (written < 1)
-    {
-        if (written < 0 || result < 0)
-            return false;
-            
-        result = device.write (l_str, 1);
-        written += result;
-    }
-    
-    BBaseVectorIterator iter;
-    for (iter = begin(); iter != end(); ++iter)
-    {
-        if (!((*iter)->writeToDevice (device)))
+    foreach(const BBase::Ptr &ptr, m_array) {
+        if(!ptr->writeToDevice(device))
             return false;
     }
-    
-    written = device.write (e_str, 1);
-    while (written < 1)
-    {
-        if (written < 0 || result < 0)
-            return false;
-            
-        result = device.write (e_str, 1);
-        written += result;
-    }
-    
+
+    if (!device.putChar('e'))
+        return false;
+
     return true;
 }
 

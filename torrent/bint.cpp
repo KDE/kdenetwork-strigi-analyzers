@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004 Michael Pyne <michael.pyne@kdemail.net>
+ * Copyright © 2003, 2004, 2009 Michael Pyne <michael.pyne@kdemail.net>
  *
  * This software is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -16,86 +16,59 @@
  * If not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-#include <qstring.h>
-#include <qiodevice.h>
-
-#include "bytetape.h"
 #include "bint.h"
+#include "bytestream.h"
+
+#include <QtCore/QString>
+#include <QtCore/QIODevice>
+
+#include <stdexcept>
+#include <string>
 
 // A bencoded int is (approximately) as follows:
 // i(\d)+e
-BInt::BInt (QByteArray &dict, int start)
-    : m_value (0), m_valid(false)
+BInt::BInt (ByteStream &stream)
+    : m_value(0)
 {
-    ByteTape tape (dict, start);
-    init (tape);
-}
-
-BInt::BInt (ByteTape &tape)
-    : m_value(0), m_valid(false)
-{
-    init(tape);
-}
-
-void BInt::init (ByteTape &tape)
-{
-    if (*tape != 'i')
+    if (*stream != 'i')
         return;
 
-    tape ++; // Move to start of digits
+    ++stream; // Move to start of digits
+    QByteArray digits;
 
-    QByteArray &dict (tape.data());
-    if (dict.indexOf('e', tape.pos()) == -1)
-        return;
+    // Loop until we encounter the 'e'
+    while (*stream != 'e') {
+        digits.append(*stream);
+        ++stream;
+    }
 
-    // Copy the part from the start to the e.  The values in-between
-    // should be digits, perhaps preceded by a negative sign.
-    int length = dict.indexOf('e', tape.pos()) - tape.pos();
-    char *ptr = dict.data(); // Get start of buffer
-    ptr += tape.pos(); // Advance to current position in tape
+    // Eat the 'e'
+    ++stream;
 
-    // Allocate temporary data buffer
-    QByteArray buffer(length + 1, ' ');
-
-    memmove (buffer.data(), ptr, length);
-    buffer[length] = 0; // Null-terminate
-
-    QString numberString (buffer);
     bool a_isValid; // We want to make sure the string is a valid number
 
-    m_value = numberString.toLongLong(&a_isValid);
+    m_value = digits.toLongLong(&a_isValid);
 
-    tape += length; // Move to 'e'
-    tape ++;        // Move to next char
-
-    m_valid = a_isValid; // Now we're good, if it was a number
+    if(!a_isValid)
+        throw std::runtime_error("Invalid int read");
 }
 
 BInt::~BInt()
 {
-    /* Nothing yet */
 }
 
 bool BInt::writeToDevice (QIODevice &device)
 {
-    if (!m_valid)
+    if(!device.putChar('i'))
         return false;
 
-    /* Write out i234e, and such */
-    QString str = QString("i%1e").
-        arg (m_value);
+    QByteArray value(QByteArray::number(m_value));
 
-    Q_LONG written = 0, result = 0;
-    written = device.write (str.toLatin1(), str.length());
-    while (written < str.length())
-    {
-        if (written < 0 || result < 0)
-            return false;
+    if(value.size() != device.write(value.constData(), value.size()))
+        return false;
 
-        result = device.write((str + written).toLatin1(),
-                str.length() - written);
-        written += result;
-    }
+    if(!device.putChar('e'))
+        return false;
 
     return true;
 }

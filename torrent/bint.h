@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004 Michael Pyne <michael.pyne@kdemail.net>
+ * Copyright © 2003, 2004, 2009 Michael Pyne <michael.pyne@kdemail.net>
  *
  * This software is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -16,43 +16,38 @@
  * If not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-#ifndef _BINT_H
-#define _BINT_H
+#ifndef TORRENT_ANALYZER_INT_H
+#define TORRENT_ANALYZER_INT_H
 
 #include "bbase.h"
-#include "bytetape.h"
+
+#include <QtGlobal>
+
+class ByteStream;
 
 /**
  * Class to represent a b-encoded integer.
  *
- * @author Michael Pyne <mpyne@grammarian.homelinux.net>
+ * @author Michael Pyne <michael.pyne@kdemail.net>
  * @see BBase
  */
 class BInt : public BBase
 {
     public:
 
-    /**
-     * Constructs a BInt by reading a b-encoded integer from @p dict.
-     * You can start reading from a position other than the beginning
-     * by passing that position to the constructor.
-     *
-     * @param dict the buffer to read from
-     * @param start the position within the buffer of the beginning
-     *        of the b-encoded integer.
-     */
-    BInt (QByteArray &dict, int start = 0);
+    typedef boost::shared_ptr<BInt> Ptr;
 
     /**
-     * Constructs a BInt by reading a b-encoded integer from @p tape.
-     * 
-     * @param tape the ByteTape to read from.  It should already be
-     *        positioned at the beginning of the b-encoded integer data.
-     *        After construction, @p tape will point to the byte after
-     *        the b-encoded integer on success.  If construction was
-     *        not successful, @p tape will have an undefined position.
+     * Constructs a BInt by reading a b-encoded integer from @p stream.
+     *
+     * If an error is encountered decoding the stream an exception will
+     * be raised.
+     *
+     * Note: The stream should still be on the initial 'i' character.
+     *
+     * @param stream the ByteStream to read from.
      */
-    BInt (ByteTape &tape);
+    BInt (ByteStream &stream);
 
     /**
      * Destructor for this class.  No special action is taken.
@@ -73,16 +68,7 @@ class BInt : public BBase
      * @return bInt.  This value is only returned by this class.
      */
     virtual classID type_id() const { return bInt; }
-    
-    /**
-     * This function should be called to determine whether the
-     * integer was successfully created, since no exceptions
-     * are thrown.
-     *
-     * @return true if this is a valid integer, false otherwise
-     */
-    virtual bool isValid() const { return m_valid; }
-    
+
     /**
      * Outputs the b-encoded representation of the object to the given
      * QIODevice.
@@ -92,19 +78,10 @@ class BInt : public BBase
     virtual bool writeToDevice (QIODevice &device);
 
     private:
-    
-    /**
-     * Initialization function for the class, called to handle the
-     * actual work of reading the b-encoded data from @p tape.
-     *
-     * @param tape the ByteTape to read from
-     */
-    void init(ByteTape &tape);
 
     qlonglong m_value;
-    bool m_valid;
 };
 
-#endif /* _BINT_H */
+#endif /* TORRENT_ANALYZER_INT_H */
 
 // vim: set et ts=4 sw=4:

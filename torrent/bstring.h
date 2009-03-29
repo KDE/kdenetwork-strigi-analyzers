@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004 Michael Pyne <michael.pyne@kdemail.net>
+ * Copyright © 2003, 2004, 2009 Michael Pyne <michael.pyne@kdemail.net>
  *
  * This software is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -16,13 +16,15 @@
  * If not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-#ifndef _BSTRING_H
-#define _BSTRING_H
+#ifndef TORRENT_ANALYZER_STRING_H
+#define TORRENT_ANALYZER_STRING_H
 
-#include <qstring.h>
-
-#include "bytetape.h"
 #include "bbase.h"
+
+#include <QtCore/QByteArray>
+
+class ByteStream;
+class QString;
 
 /**
  * A class to handle the b-encoded strings used by BitTorrent.
@@ -30,40 +32,34 @@
  * as a string, it can hold arbitrary data, since b-encoded strings
  * are stored with a length, instead of using a terminator character.
  *
- * @author Michael Pyne <mpyne@grammarian.homelinux.net>
+ * @author Michael Pyne <michael.pyne@kdemail.net>
  * @see BBase
  */
 class BString : public BBase
 {
     public:
 
-    /**
-     * Construct a BString from @p dict.
-     *
-     * @param dict the buffer to read from
-     * @param start the position in the buffer to start
-     *        reading from
-     */
-    BString (QByteArray &dict, int start = 0);
+    typedef boost::shared_ptr<BString> Ptr;
 
     /**
-     * Construct a BString from @p tape.  Any changes made to
-     * @p tape, such as its current position and data, will be
-     * shared with the object that called this constructor.  @p tape
+     * Construct a BString from @p stream.  Any changes made to
+     * @p stream, such as its current position and data, will be
+     * shared with the object that called this constructor.  @p stream
      * should already be positioned at the position to read from.
-     * If construction was successful, @p tape will point to the
+     * If construction was successful, @p stream will point to the
      * byte after the string data.  If construction was unsuccessful,
-     * the position of the tape is undefined.
+     * then an exception is thrown.
      *
-     * @param tape the ByteTape to read from.
+     * @param stream the ByteStream to read from.
      */
-    BString (ByteTape &tape);
-    
-    /**
-     * Destroys the BString, and deallocates all memory that had
-     * been used.
-     */
+    BString (ByteStream &stream);
+
     virtual ~BString ();
+
+    /**
+     * @return the character data as read in from the b-encoding.
+     */
+    QByteArray raw_data() const { return m_data; }
 
     /**
      * Returns a QString representation of the data in the
@@ -73,17 +69,17 @@ class BString : public BBase
      *
      * @return QString containing the data from this BString.
      */
-    QString get_string() const { return QString::fromUtf8(m_data.data()); }
+    QString toString() const;
 
     /**
-     * Returns the amount of data held by the string.  It would be
-     * perhaps more appropriate to call this size(), since this is
-     * a buffer, not a true text string.
+     * Returns the size in bytes of the string.  Note that no \0 terminator
+     * is included in the size calculation (and indeed, b-encoded strings
+     * may have arbitrary nulls.
      *
      * @return the size of the string, not including the NULL
      *         terminator.
      */
-    const int get_len() const { return m_data.size() - 1; }
+    int size() const { return m_data.size(); }
 
     /**
      * Returns the type of this class.
@@ -93,22 +89,13 @@ class BString : public BBase
     virtual classID type_id() const { return bString; }
 
     /**
-     * This function should be called to determine whether the
-     * string was successfully created, since no exceptions
-     * are thrown.
-     *
-     * @return true if this is a valid string, false otherwise
-     */
-    virtual bool isValid() const { return m_valid; }
-
-    /**
      * Outputs the b-encoded representation of the object to the given
      * QIODevice.
      * @param device the QIODevice to write to
      * @return true on a successful write, false otherwise
      */
     virtual bool writeToDevice (QIODevice &device);
-    
+
     /**
      * Changes the value of the string to the given QString.
      *
@@ -117,21 +104,13 @@ class BString : public BBase
      *         false otherwise.
      */
     bool setValue (const QString &str);
-    
-    private:
 
-    /**
-     * This function handles the actual initialization of the object upon
-     * construction, and set the m_valid flag if successful.
-     *
-     * @param tape the ByteTape to read from
-     */
-    void init (ByteTape &tape);
+    private:
 
     QByteArray m_data;
     bool m_valid;
 };
 
-#endif /* _BSTRING_H */
+#endif /* TORRENT_ANALYZER_STRING_H */
 
 // vim: set et ts=4 sw=4:

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004 Michael Pyne <michael.pyne@kdemail.net>
+ * Copyright © 2003, 2004, 2009 Michael Pyne <michael.pyne@kdemail.net>
  *
  * This software is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -16,204 +16,121 @@
  * If not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-#include <qstringlist.h>
-#include <qiodevice.h>
-#include <QByteArray>
-
-#include <kdebug.h>
-
-#include "bbase.h"
 #include "bdict.h"
+#include "bytestream.h"
 #include "bstring.h"
 #include "bint.h"
 #include "blist.h"
 
-BDict::BDict (QByteArray &dict, int start)
-    : m_map(), m_valid(false)
-{
-    ByteTape tape(dict, start);
+#include <QtCore/QIODevice>
+#include <QtCore/QByteArray>
+#include <QtCore/QList>
+#include <QtCore/QtAlgorithms>
 
-    init (tape);
-}
+#include <stdexcept>
+#include <string>
 
-BDict::BDict (ByteTape &tape)
-    : m_map(), m_valid (false)
+BDict::BDict (ByteStream &stream)
+    : m_dict()
 {
-    init (tape);
-}
-
-void BDict::init (ByteTape &tape)
-{
-    if (*tape != 'd')
+    if (*stream != 'd')
     {
-        kDebug(7034) << "This isn't a dictionary!";
-        return; // This isn't a dictionary
+        throw std::runtime_error("Trying to read dictionary, but this isn't a dictionary");
     }
 
-    tape++;
+    ++stream;
 
     // We need to loop and read in a string, then read in some data
-    while (*tape != 'e')
+    while (*stream != 'e')
     {
-        BBase *temp_item = 0;
-
         // Read in string
-        KSharedPtr<BString> str (new BString (tape));
+        BString::Ptr str(new BString(stream));
 
-        // Ensure str will be automatically deleted
-        if (!str || !str->isValid())
-        {
-            kDebug(7034) << (str ? "Invalid string" : "Unable to read String!");
-            return;
-        }
+        BBase::Ptr temp_item;
 
         // Read in data
-        switch (*tape)
+        switch (*stream)
         {
             case 'l':
-                temp_item = new BList (tape);
+                temp_item = BBase::Ptr(new BList (stream));
             break;
 
             case 'i':
-                temp_item = new BInt (tape);
+                temp_item = BBase::Ptr(new BInt (stream));
             break;
 
             case 'd':
-                temp_item = new BDict (tape);
+                temp_item = BBase::Ptr(new BDict (stream));
             break;
 
             default:
                 // Hopefully this is a string
-                temp_item = new BString (tape);
+                temp_item = BBase::Ptr(new BString (stream));
         }
 
-        if (!temp_item || !temp_item->isValid())
-        {
-            kDebug(7034) << (temp_item ? "Invalid item!"
-                      : "Unable to create keyed data!") << endl;
-            return;
-        }
-
-        m_map.insert(str->get_string(), temp_item);
+        m_dict.insert(str->raw_data(), temp_item);
     }
 
     // Move past the 'e'
-    tape++;
-
-    // Let the map delete the items
-    m_map.setAutoDelete (true);
-
-    // Oh yeah, we're valid now, too. :-)
-    m_valid = true;
+    ++stream;
 }
 
 BDict::~BDict ()
 {
-    // QDict will take care of deleting each entry that
-    // it holds.
 }
 
-BInt *BDict::findInt (const char *key)
+int BDict::count() const
 {
-    BBase *base = find(key);
-
-    if (base && base->type_id() == bInt)
-        return dynamic_cast<BInt*>(base);
-
-    return 0;
+    return m_dict.count();
 }
 
-BList *BDict::findList (const char *key)
+BBase::Ptr BDict::find (const QByteArray &key) const
 {
-    BBase *base = find(key);
-
-    if (base && base->type_id() == bList)
-        return dynamic_cast<BList*>(base);
-
-    return 0;
+    return m_dict.value(key);
 }
 
-BDict *BDict::findDict (const char *key)
+bool BDict::contains (const QByteArray &key)
 {
-    BBase *base = find(key);
-
-    if (base && base->type_id() == bDict)
-        return dynamic_cast<BDict*>(base);
-
-    return 0;
+    return m_dict.contains(key);
 }
 
-BString *BDict::findStr (const char *key)
+BDictionaryIterator BDict::iterator() const
 {
-    BBase *base = find(key);
-
-    if (base && base->type_id() == bString)
-        return dynamic_cast<BString*>(base);
-
-    return 0;
+    return BDictionaryIterator(m_dict);
 }
 
 bool BDict::writeToDevice(QIODevice &device)
 {
-    if (!isValid())
+    if(!device.putChar('d'))
         return false;
 
-    const char *d_str = "d";
-    const char *e_str = "e";
-    Q_LONG written = 0, result = 0;
-
-    written = device.write (d_str, 1);
-    while (written < 1)
-    {
-        if (written < 0 || result < 0)
-            return false;
-
-        result = device.write (d_str, 1);
-        written += result;
-    }
-
     // Strings are supposed to be written in the dictionary such that
-    // the keys are in sorted order.  QDictIterator doesn't support an
+    // the keys are in sorted order.  QHashIterator doesn't support an
     // ordering, so we have to get a list of all the keys, sort it, and
     // then go by the list.
 
-    BBaseHashIterator iter (m_map);
-    QStringList key_list;
+    QList<QByteArray> keys = m_dict.keys();
+    qSort(keys);
 
-    for ( ; iter.current(); ++iter)
-        key_list.append(iter.currentKey());
-
-    key_list.sort();
-
-    QStringList::Iterator key_iter;
-    for (key_iter = key_list.begin(); key_iter != key_list.end(); ++key_iter)
-    {
-        QByteArray utfString = (*key_iter).toUtf8();
-        QString str = QString("%1:").arg(utfString.size() - 1);
-
-        QByteArray lenString = str.toUtf8();
+    foreach (const QByteArray &key, keys) {
+        const QByteArray lenString(QByteArray::number(key.length()));
 
         // Write out length of key
-        device.write(lenString.data(), lenString.size() - 1);
+        if(lenString.size() != device.write(lenString.constData(), lenString.size()))
+            return false;
 
         // Write out actual key
-        device.write(utfString.data(), utfString.size() - 1);
+        if(key.size() != device.write(key.constData(), key.size()))
+            return false;
 
         // Write out the key's data
-        BBase *base = m_map.find(*key_iter);
-        if (!base->writeToDevice (device))
+        BBase::Ptr base(m_dict.value(key));
+        if (!base || !base->writeToDevice (device))
             return false;
     }
 
-    written = device.write (e_str, 1);
-    while ((uint) written < 1)
-    {
-        if (written < 0 || result < 0)
-            return false;
-
-        result = device.write (e_str, 1);
-        written += result;
-    }
+    if(!device.putChar('e'))
+        return false;
 
     return true;
 }

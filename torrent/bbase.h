@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004 Michael Pyne <michael.pyne@kdemail.net>
+ * Copyright © 2003, 2004, 2009 Michael Pyne <michael.pyne@kdemail.net>
  *
  * This software is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -16,10 +16,10 @@
  * If not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-#ifndef _BBASE_H
-#define _BBASE_H
+#ifndef TORRENT_ANALYZER_BASE_H
+#define TORRENT_ANALYZER_BASE_H
 
-#include <ksharedptr.h>
+#include <boost/shared_ptr.hpp>
 
 class QIODevice;
 
@@ -31,20 +31,20 @@ class QIODevice;
  * they should implement isValid(), and allow calling modules to
  * check error status that way.
  *
- * @author Michael Pyne <mpyne@grammarian.homelinux.net>
- * @see BInt, BList, BDict, BString, KSharedPtr
+ * @author Michael Pyne <michael.pyne@kdemail.net>
+ * @see BInt, BList, BDict, BString, QSharedData
  */
-
-// Derive from KShared to enable use of KSharedPtr.
-class BBase : public KShared
+class BBase
 {
     public:
+
+    typedef boost::shared_ptr<BBase> Ptr;
 
     /**
      * Identifies the particular class that has been instantiated.  All
      * subclasses of this class should have an identifier here.
      */
-    enum classID { 
+    enum classID {
         bBase,   /**< This class is BBase.  No subclass should return this. */
         bString, /**< This class is a BString. */
         bInt,    /**< This class is a BInt. */
@@ -69,15 +69,6 @@ class BBase : public KShared
     virtual ~BBase () { ; }
 
     /**
-     * Returns the validity status of the object.  Newly constructed
-     * objects are invalid unless the initialization sequence completed
-     * successfully.
-     *
-     * @return the validity status of the object
-     */
-    virtual bool isValid() const = 0;
-    
-    /**
      * Outputs the b-encoded representation of the object to the given
      * QIODevice.
      * @param device the QIODevice to write to
@@ -86,6 +77,6 @@ class BBase : public KShared
     virtual bool writeToDevice (QIODevice &device) = 0;
 };
 
-#endif /* _BBASE_H */
+#endif /* TORRENT_ANALYZER_BASE_H */
 
 // vim: set et sw=4 ts=4:
