@@ -1,3 +1,5 @@
+include_directories(${STRIGI_STREAMS_INCLUDES} ${STRIGI_STREAMANALYZER_INCLUDES})
+
 set(torrent_analyzer_SRCS
    bytestream.cpp
    bint.cpp
