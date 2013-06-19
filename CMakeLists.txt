@@ -29,6 +29,9 @@ endif(NOT INSIDE_KDENETWORK)
 macro_optional_find_package(Strigi)
 macro_log_feature(STRIGI_FOUND "Strigi" "Metadata extraction" "" FALSE "" "Needed to get metadata for .torrent files")
 
+macro_optional_find_package(Boost)
+macro_log_feature(Boost_FOUND "Boost C++ Libraries" "http://www.boost.org" "" TRUE "" "Boost is required to build the torrent analyzer")
+
 if(STRIGI_FOUND)
     add_subdirectory(torrent)
 endif(STRIGI_FOUND)
